@@ -27,6 +27,14 @@ void set_speedB(signed char speed)
 }
 // END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////
 
+// Notes
+
+// When implementing this for four wheels, I think we focus on activating two wheels at a time
+// The other two wheels can be "passive" and drag along
+// This should allow us to "spidercrawl" (obviously we will have to test)
+
+// This code will also have to be adapted to use L298N drivers (I don't think it does)
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
