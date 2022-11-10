@@ -1,11 +1,64 @@
-char val = 0; //holds ascii from serial line
+// Define global variables
 
-signed char i = 0; // motor 1 speed - probably rename this
-signed char j = 0; // motor 2 speed - probably rename this
+// MOTORS
+int motor1_en = 9;
+int motor1_in1 = 22;
+int motor1_in2 = 24;
+int motor1_speed = 0;
+bool motor1_forward = true;
+
+int motor2_en = 10;
+int motor2_in1 = 26;
+int motor2_in2 = 28;
+int motor2_speed = 0;
+bool motor2_forward = true;
+
+int motor3_en = 11;
+int motor3_in1 = 30;
+int motor3_in2 = 32;
+int motor3_speed = 0;
+bool motor3_forward = true;
+
+int motor4_en = 12;
+int motor4_in1 = 34;
+int motor4_in2 = 36;
+int motor4_speed = 0;
+bool motor4_forward = true;
+
+
+char val = 0; //holds ascii from serial line
 
 // MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
 // Code adapted from MC_PWM_clean.ino provided on Quercus
 // Potentially for Uno and not Mega, will have to test
+
+// Set speed of a motor given the motor enable pin and the desired speed
+void set_speed(int motor_en, int desired_speed)
+{
+  // Safety check to ensure speed is valid
+  if (desired_speed >= 0 && desired_speed <= 255)
+  {
+    analogWrite(motor_en, desired_speed);
+  }
+}
+
+// Change direction of a motor given the motor input pins
+// Will probably have to adapt because each motor might be different
+void change_direction(int motor_forward, int motor_in1, int motor_in2)
+{
+  if (motor_forward) // if forward
+  {
+    digitalWrite(motor_in1, HIGH);
+    digitalWrite(motor_in2, LOW);
+  }
+  else
+  {
+    digitalWrite(motor_in1, LOW);
+    digitalWrite(motor_in2, HIGH);
+  }
+}
+
+/*
 //Speeds are between -32 and 32
 void set_speedA(signed char speed) 
 {
@@ -26,7 +79,7 @@ void set_speedB(signed char speed)
   }
 }
 // END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////
-
+*/
 // Notes
 
 // When implementing this for four wheels, I think we focus on activating two wheels at a time
@@ -37,11 +90,30 @@ void set_speedB(signed char speed)
 
 void setup() {
   // put your setup code here, to run once:
+  /*
+  // Sample code from quercus
   Serial.begin(9600);
   Serial.println("Greetings bluebots");
   set_speedA(i);
   set_speedB(j);
+  // End of sample code from quercus
+  */
+  Serial.begin(9600);
+  Serial.println("Greetings bluebots");
 
+  // Initialize motor speeds to 0
+  set_speed(motor1_en, motor1_speed);
+  set_speed(motor2_en, motor2_speed);
+  set_speed(motor3_en, motor3_speed);
+  set_speed(motor4_en, motor4_speed);
+
+  // Initialize motor directions to forward
+  change_direction(motor1_forward, motor1_in1, motor1_in2);
+  change_direction(motor2_forward, motor2_in1, motor2_in2);
+  change_direction(motor3_forward, motor3_in1, motor3_in2);
+  change_direction(motor4_forward, motor4_in1, motor4_in2);
+  
+  
 } // end of setup()
 
 void loop() {
@@ -56,38 +128,38 @@ void loop() {
     Serial.println(val); // print out input
     if (val == 'w')
       {
-        i = i + 8;
-        j = j + 8;
-        set_speedA(i);
-        set_speedB(j);
+        motor1_speed = motor1_speed + 8;
+        motor2_speed = motor2_speed + 8;
+        set_speed(motor1_en, motor1_speed);
+        set_speed(motor2_en, motor2_speed);
       }
       else if(val == 's')
       {
-        i = i - 8;
-        j = j - 8;
-        set_speedA(i);
-        set_speedB(j);
+        motor1_speed = motor1_speed - 8;
+        motor2_speed = motor2_speed - 8;
+        set_speed(motor1_en, motor1_speed);
+        set_speed(motor2_en, motor2_speed);
       }
       else if(val == 'd')
       {
-        i = i + 8;
-        j = j - 8;
-        set_speedA(i);
-        set_speedB(j);
+        motor1_speed = motor1_speed + 8;
+        motor2_speed = motor2_speed - 8;
+        set_speed(motor1_en, motor1_speed);
+        set_speed(motor2_en, motor2_speed);
       }
       else if(val == 'a')
       {
-        i = i - 8;
-        j = j + 8;
-        set_speedA(i);
-        set_speedB(j);
+        motor1_speed = motor1_speed - 8;
+        motor2_speed = motor2_speed + 8;
+        set_speed(motor1_en, motor1_speed);
+        set_speed(motor2_en, motor2_speed);
       }
       else if(val == 'k')
       {
-        i = 0;
-        j = 0;
-        set_speedA(i);
-        set_speedB(j);
+        motor1_speed = 0;
+        motor2_speed = 0;
+        set_speed(motor1_en, motor1_speed);
+        set_speed(motor2_en, motor2_speed);
       }
   } // end of if (Serial.available())
 } // end of loop()
