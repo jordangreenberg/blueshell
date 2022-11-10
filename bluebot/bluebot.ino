@@ -25,6 +25,16 @@ int motor4_in2 = 36;
 int motor4_speed = 0;
 bool motor4_forward = true;
 
+double corrected_speed = 0;
+// END of MOTORS
+
+// SENSORS
+double rightDistance;     // sensor data
+double leftDistance;      // sensor data
+double prevRight;
+double prevLeft;
+// END of SENSORS
+
 
 char val = 0; //holds ascii from serial line
 
@@ -58,46 +68,17 @@ void change_direction(int motor_forward, int motor_in1, int motor_in2)
   }
 }
 
-/*
-//Speeds are between -32 and 32
-void set_speedA(signed char speed) 
-{
-  if((speed > -128) && (speed < 128))
-  {
-     analogWrite(9, 128 + speed); // NEED TO ADAPT FOR PIN ASSIGNMENT
-     analogWrite(10, 128 + speed); // NEED TO ADAPT FOR PIN ASSIGNMENT
-     TCCR1A |= B00110000;  //invert PWM output - using timer interrupts, will have to look more into this
-  }
-}
-void set_speedB(signed char speed)
-{
-  if((speed > -128) && (speed < 128))
-  {
-     analogWrite(5, 128 + speed); // NEED TO ADAPT FOR PIN ASSIGNMENT
-     analogWrite(6, 128 + speed); // NEED TO ADAPT FOR PIN ASSIGNMENT
-     TCCR0A |= B00110000;  //invert PWM output - using timer interrupts, will have to look more into this
-  }
-}
+
 // END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////
-*/
 // Notes
 
 // When implementing this for four wheels, I think we focus on activating two wheels at a time
 // The other two wheels can be "passive" and drag along
 // This should allow us to "spidercrawl" (obviously we will have to test)
 
-// This code will also have to be adapted to use L298N drivers (I don't think it does)
 
 void setup() {
   // put your setup code here, to run once:
-  /*
-  // Sample code from quercus
-  Serial.begin(9600);
-  Serial.println("Greetings bluebots");
-  set_speedA(i);
-  set_speedB(j);
-  // End of sample code from quercus
-  */
   Serial.begin(9600);
   Serial.println("Greetings bluebots");
 
@@ -112,12 +93,25 @@ void setup() {
   change_direction(motor2_forward, motor2_in1, motor2_in2);
   change_direction(motor3_forward, motor3_in1, motor3_in2);
   change_direction(motor4_forward, motor4_in1, motor4_in2);
+
+  // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
+  
+  // Initialize controller
+  init_controller(rightDistance, leftDistance);
   
   
 } // end of setup()
 
 void loop() {
   // put your main code here, to run repeatedly:
+
+  // NOTE: Might need to add delay to account or take it takes for robot to adjust motor speed
+
+  // OVERALL PLAN:
+  // Read sensors
+  // Call controller to calculate correction
+  corrected_speed = pid_controller(rightDistance, leftDistance);
+  // Move with corrected speeds
 
   // This code will control two motors that are setup in left/right configuration
   // 'w' (forward), 'a' (left), 's' (backward), 'd' (right), 'k' (stop) can be input to control the motors

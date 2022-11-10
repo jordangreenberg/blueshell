@@ -1,9 +1,3 @@
-
-double rightDistance;     // sensor data
-double leftDistance;      // sensor data
-double prevRight;
-double prevLeft;
-
 double error;
 double prevError;
 double sumError;
@@ -13,33 +7,38 @@ int kp = 1;
 int ki = 2;
 int kd = 3;
 
-unsigned long currTime = millis();
-unsigned long prevTime = 0;
+unsigned long currTime;
+unsigned long prevTime;
 double elapsedTime;
 
 double correction;
 double rightAdjustedSpeed;
 double leftAdjustedSpeed;
-double minAdjust = 0;
-double maxAdjust = 255;
+double minAdjust;
+double maxAdjust;
 
 // constrain (rightAdjustedSpeed, minAdjust, maxAdjust);
 // constrain (leftAdjustedSpeed, minAdjust, maxAdjust);
 
-
-void setup() {
-   // put your setup code here, to run once: 
+void init_controller(double rightDistance, double leftDistance) {
+  prevError = 0;
+  sumError = 0;
+  currTime = millis();
+  prevTime = 0;
+  minAdjust = 0;
+  maxAdjust = 255;
+  prevRight = rightDistance;
+  prevLeft = leftDistance;
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
-
-   elapsedTime = currTime - prevTime;
-
+double pid_controller(double rightDistance, double leftDistance) {
+  // Calculate elapsed time since controller last executed
+  currTime = millis();
+  elapsedTime = currTime - prevTime;
     
   // *** may want to adjust multiplyer for corridor checks from 1.1 to something else
   
-  if (rightDistance < prevRight*1.10 && rightDistance > prevRight*0.90) {               
+  if (rightDistance > prevRight*1.10 || rightDistance < prevRight*0.90) {               
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
     // when the current hallway changed revealing new paths, we will take the error measurement from the left side
@@ -60,7 +59,7 @@ void loop() {
     // leftAdjustedSpeed += correction;         // adjust left side motor speed
   }
 
-  else if (leftDistance < prevLeft*1.10 && leftDistance > prevLeft*0.90) {       
+  else if (leftDistance > prevLeft*1.10 || leftDistance < prevLeft*0.90) {       
     // in case right side has a path change, now using the left side as the error calculator
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
@@ -85,12 +84,15 @@ void loop() {
 
   else  {
     // make no motor corrections
+    correction = 0;
   }
 
-prevError = error;
-prevTime = currTime;
+  prevError = error;
+  prevTime = currTime;
+  
+  prevRight = rightDistance;
+  prevLeft = leftDistance;
 
-prevRight = rightDistance;
-prevLeft = leftDistance;
+  return correction;
 
 }
