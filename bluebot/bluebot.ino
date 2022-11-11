@@ -1,6 +1,5 @@
 // Define global variables
-
-// MOTORS
+// MOTOR VARIABLES
 int motor1_en = 9;
 int motor1_in1 = 22;
 int motor1_in2 = 24;
@@ -26,50 +25,18 @@ int motor4_speed = 0;
 bool motor4_forward = true;
 
 double corrected_speed = 0;
-// END of MOTORS
+int * rightSpeed;
+int * leftSpeed;
+int * right_en;
+int * left_en;
+int forwardMotor;
+// END of MOTOR VARIABLES
 
-// SENSORS
-double rightDistance;     // sensor data
-double leftDistance;      // sensor data
-double prevRight;
-double prevLeft;
-// END of SENSORS
+// SENSOR VARIABLES
+float * rightDistance;
+float * leftDistance;
+// END OF SENSOR VARIABLES
 
-
-char val = 0; //holds ascii from serial line
-
-// MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
-// Code adapted from MC_PWM_clean.ino provided on Quercus
-// Potentially for Uno and not Mega, will have to test
-
-// Set speed of a motor given the motor enable pin and the desired speed
-void set_speed(int motor_en, int desired_speed)
-{
-  // Safety check to ensure speed is valid
-  if (desired_speed >= 0 && desired_speed <= 255)
-  {
-    analogWrite(motor_en, desired_speed);
-  }
-}
-
-// Change direction of a motor given the motor input pins
-// Will probably have to adapt because each motor might be different
-void change_direction(int motor_forward, int motor_in1, int motor_in2)
-{
-  if (motor_forward) // if forward
-  {
-    digitalWrite(motor_in1, HIGH);
-    digitalWrite(motor_in2, LOW);
-  }
-  else
-  {
-    digitalWrite(motor_in1, LOW);
-    digitalWrite(motor_in2, HIGH);
-  }
-}
-
-
-// END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////
 // Notes
 
 // When implementing this for four wheels, I think we focus on activating two wheels at a time
@@ -80,7 +47,6 @@ void change_direction(int motor_forward, int motor_in1, int motor_in2)
 void setup() {
   // put your setup code here, to run once:
   
-  // Sample code from quercus
   Serial.begin(9600);
   Serial.println("Greetings bluebots");
 
@@ -97,10 +63,14 @@ void setup() {
   change_direction(motor4_forward, motor4_in1, motor4_in2);
 
   // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
-  
+  readSensors();
+
+  // TODO: Determine which way we are going - should we orient first?
+  forwardMotor = 1;
+  change_heading(forwardMotor);
+    
   // Initialize controller
-  init_controller(rightDistance, leftDistance);
-  
+  init_controller(*rightDistance, *leftDistance);
   
 } // end of setup()
 
@@ -110,11 +80,24 @@ void loop() {
   // NOTE: Might need to add delay to account or take it takes for robot to adjust motor speed
 
   // OVERALL PLAN:
+  
   // Read sensors
-  // Call controller to calculate correction
-  corrected_speed = pid_controller(rightDistance, leftDistance);
-  // Move with corrected speeds
+  readSensors();
 
+  // Here is where we would put the obstacle avoidance logic 
+  // i.e. should we change our heading/direction that we are moving?
+  
+  // Call controller to calculate correction
+  corrected_speed = pid_controller(*rightDistance, *leftDistance);
+
+  // Adjust speeds
+  adjustSpeeds(corrected_speed);
+  
+  // Move with corrected speeds
+  drive();
+
+  // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
+  /*
   // This code will control two motors that are setup in left/right configuration
   // 'w' (forward), 'a' (left), 's' (backward), 'd' (right), 'k' (stop) can be input to control the motors
 
@@ -158,4 +141,5 @@ void loop() {
         set_speed(motor2_en, motor2_speed);
       }
   } // end of if (Serial.available())
+  */
 } // end of loop()
