@@ -79,6 +79,8 @@ void change_direction(int motor_forward, int motor_in1, int motor_in2)
 
 void setup() {
   // put your setup code here, to run once:
+  
+  // Sample code from quercus
   Serial.begin(9600);
   Serial.println("Greetings bluebots");
 
