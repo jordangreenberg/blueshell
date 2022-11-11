@@ -1,3 +1,6 @@
+#define RIGHT 1
+#define LEFT 2
+
 double error;
 double prevError;
 double sumError;
@@ -11,33 +14,31 @@ unsigned long currTime;
 unsigned long prevTime;
 double elapsedTime;
 
+int drift;
 double correction;
 double rightAdjustedSpeed;
 double leftAdjustedSpeed;
-double minAdjust;
-double maxAdjust;
 
-// constrain (rightAdjustedSpeed, minAdjust, maxAdjust);
-// constrain (leftAdjustedSpeed, minAdjust, maxAdjust);
+float prevRight;
+float prevLeft;
 
-void init_controller(double rightDistance, double leftDistance) {
+void init_controller(float rightDistance, float leftDistance) {
   prevError = 0;
   sumError = 0;
   currTime = millis();
   prevTime = 0;
-  minAdjust = 0;
-  maxAdjust = 255;
   prevRight = rightDistance;
   prevLeft = leftDistance;
 }
 
-double pid_controller(double rightDistance, double leftDistance) {
+double pid_controller(float rightDistance, float leftDistance) {
   // Calculate elapsed time since controller last executed
   currTime = millis();
   elapsedTime = currTime - prevTime;
     
   // *** may want to adjust multiplyer for corridor checks from 1.1 to something else
   
+  // TODO: confirm these conditions and drift directions, see issue on GitHub
   if (rightDistance > prevRight*1.10 || rightDistance < prevRight*0.90) {               
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
@@ -57,6 +58,7 @@ double pid_controller(double rightDistance, double leftDistance) {
   
     // rightAdjustedSpeed -= correction;        // adjust right side motor speed
     // leftAdjustedSpeed += correction;         // adjust left side motor speed
+    drift = RIGHT;
   }
 
   else if (leftDistance > prevLeft*1.10 || leftDistance < prevLeft*0.90) {       
@@ -80,6 +82,7 @@ double pid_controller(double rightDistance, double leftDistance) {
   
     // rightAdjustedSpeed += correction;        // adjust right side motor speed
     // leftAdjustedSpeed -= correction;         // adjust left side motor speed
+    drift = LEFT;
   }
 
   else  {
