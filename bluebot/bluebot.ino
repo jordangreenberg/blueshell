@@ -1,14 +1,14 @@
 // Define global variables
 // MOTOR VARIABLES
-int motor1_en = 9;
-int motor1_in1 = 22;
-int motor1_in2 = 24;
+int motor1_en = 12;
+int motor1_in1 = 34;
+int motor1_in2 = 36;
 int motor1_speed = 0;
 bool motor1_forward = true;
 
-int motor2_en = 10;
-int motor2_in1 = 26;
-int motor2_in2 = 28;
+int motor2_en = 9;
+int motor2_in1 = 22;
+int motor2_in2 = 24;
 int motor2_speed = 0;
 bool motor2_forward = true;
 
@@ -18,9 +18,9 @@ int motor3_in2 = 32;
 int motor3_speed = 0;
 bool motor3_forward = true;
 
-int motor4_en = 12;
-int motor4_in1 = 34;
-int motor4_in2 = 36;
+int motor4_en = 10;
+int motor4_in1 = 26;
+int motor4_in2 = 28;
 int motor4_speed = 0;
 bool motor4_forward = true;
 
@@ -42,6 +42,8 @@ float * leftDistance;
 // When implementing this for four wheels, I think we focus on activating two wheels at a time
 // The other two wheels can be "passive" and drag along
 // This should allow us to "spidercrawl" (obviously we will have to test)
+
+char val;
 
 
 void setup() {
@@ -68,6 +70,7 @@ void setup() {
   // TODO: Determine which way we are going - should we orient first?
   forwardMotor = 1;
   change_heading(forwardMotor);
+  
     
   // Initialize controller
   init_controller(*rightDistance, *leftDistance);
@@ -97,20 +100,20 @@ void loop() {
   drive();
 
   // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
-  /*
+  
   // This code will control two motors that are setup in left/right configuration
   // 'w' (forward), 'a' (left), 's' (backward), 'd' (right), 'k' (stop) can be input to control the motors
-
+  /*
   if (Serial.available())
   {
     val = Serial.read();
     Serial.println(val); // print out input
     if (val == 'w')
       {
+        motor3_speed = motor3_speed + 8;
         motor1_speed = motor1_speed + 8;
-        motor2_speed = motor2_speed + 8;
+        set_speed(motor3_en, motor3_speed);
         set_speed(motor1_en, motor1_speed);
-        set_speed(motor2_en, motor2_speed);
       }
       else if(val == 's')
       {
@@ -135,9 +138,9 @@ void loop() {
       }
       else if(val == 'k')
       {
-        motor1_speed = 0;
+        motor4_speed = 0;
         motor2_speed = 0;
-        set_speed(motor1_en, motor1_speed);
+        set_speed(motor4_en, motor4_speed);
         set_speed(motor2_en, motor2_speed);
       }
   } // end of if (Serial.available())

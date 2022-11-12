@@ -1,4 +1,4 @@
-#define DEFAULT_SPEED 150
+#define DEFAULT_SPEED 40
 // MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
 // Code adapted from MC_PWM_clean.ino provided on Quercus
 // Potentially for Uno and not Mega, will have to test
@@ -41,44 +41,12 @@ void change_heading(int forwardMotor)
   if (forwardMotor == 1)
   {
     // Assign right/left motors, set direction to forward
-    rightSpeed = &motor2_speed;
-    leftSpeed = &motor4_speed;
-    right_en = &motor2_en;
-    left_en = &motor4_en;
-    motor2_forward = true;
-    motor4_forward = true;
-    change_direction(motor2_forward, motor2_in1, motor2_in2);
-    change_direction(motor4_forward, motor4_in1, motor4_in2);
-
-    // Assign right/left distances
-    rightDistance = &distance2;
-    leftDistance = &distance4;
-  }
-  else if (forwardMotor == 2)
-  {
-    // Assign right/left motors, set direction to forward
-    rightSpeed = &motor3_speed;
-    leftSpeed = &motor1_speed;
-    right_en = &motor3_en;
-    left_en = &motor1_en;
-    motor3_forward = true;
-    motor1_forward = true;
-    change_direction(motor3_forward, motor3_in1, motor3_in2);
-    change_direction(motor1_forward, motor1_in1, motor1_in2);
-
-    // Assign right/left distances
-    rightDistance = &distance3;
-    leftDistance = &distance1;
-  }
-  else if (forwardMotor == 3)
-  {
-    // Assign right/left motors, set direction to backward
     rightSpeed = &motor4_speed;
     leftSpeed = &motor2_speed;
     right_en = &motor4_en;
     left_en = &motor2_en;
-    motor4_forward = false;
-    motor2_forward = false;
+    motor4_forward = true;
+    motor2_forward = true;
     change_direction(motor4_forward, motor4_in1, motor4_in2);
     change_direction(motor2_forward, motor2_in1, motor2_in2);
 
@@ -86,21 +54,53 @@ void change_heading(int forwardMotor)
     rightDistance = &distance4;
     leftDistance = &distance2;
   }
-  else if (forwardMotor == 4)
+  else if (forwardMotor == 2)
   {
-    // Assign right/left motors, set direction to backward
+    // Assign right/left motors, set direction to forward
     rightSpeed = &motor1_speed;
     leftSpeed = &motor3_speed;
     right_en = &motor1_en;
     left_en = &motor3_en;
-    motor1_forward = false;
-    motor3_forward = false;
+    motor1_forward = true;
+    motor3_forward = true;
     change_direction(motor1_forward, motor1_in1, motor1_in2);
     change_direction(motor3_forward, motor3_in1, motor3_in2);
 
     // Assign right/left distances
     rightDistance = &distance1;
     leftDistance = &distance3;
+  }
+  else if (forwardMotor == 3)
+  {
+    // Assign right/left motors, set direction to backward
+    rightSpeed = &motor2_speed;
+    leftSpeed = &motor4_speed;
+    right_en = &motor2_en;
+    left_en = &motor4_en;
+    motor2_forward = false;
+    motor4_forward = false;
+    change_direction(motor2_forward, motor2_in1, motor2_in2);
+    change_direction(motor4_forward, motor4_in1, motor4_in2);
+
+    // Assign right/left distances
+    rightDistance = &distance2;
+    leftDistance = &distance4;
+  }
+  else if (forwardMotor == 4)
+  {
+    // Assign right/left motors, set direction to backward
+    rightSpeed = &motor3_speed;
+    leftSpeed = &motor1_speed;
+    right_en = &motor3_en;
+    left_en = &motor1_en;
+    motor3_forward = false;
+    motor1_forward = false;
+    change_direction(motor3_forward, motor3_in1, motor3_in2);
+    change_direction(motor1_forward, motor1_in1, motor1_in2);
+
+    // Assign right/left distances
+    rightDistance = &distance3;
+    leftDistance = &distance1;
   }
 
   // Set forward motors to default speed
