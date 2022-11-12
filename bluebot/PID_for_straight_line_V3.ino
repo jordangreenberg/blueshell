@@ -6,9 +6,9 @@ double prevError;
 double sumError;
 double rateError;
 
-int kp = 1;
-int ki = 2;
-int kd = 3;
+double kp = 0.3; // increase Kp decreases rise time
+double ki = 5;
+double kd = 15; // increase Kd decreases overshoot
 
 unsigned long currTime;
 unsigned long prevTime;
@@ -39,7 +39,7 @@ double pid_controller(float rightDistance, float leftDistance) {
   // *** may want to adjust multiplyer for corridor checks from 1.1 to something else
   
   // TODO: confirm these conditions and drift directions, see issue on GitHub
-  if (rightDistance > prevRight*1.10 || rightDistance < prevRight*0.90) {               
+  if (rightDistance < prevRight*1.25 && rightDistance > prevRight*0.75) {               
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
     // when the current hallway changed revealing new paths, we will take the error measurement from the left side
@@ -58,10 +58,15 @@ double pid_controller(float rightDistance, float leftDistance) {
   
     // rightAdjustedSpeed -= correction;        // adjust right side motor speed
     // leftAdjustedSpeed += correction;         // adjust left side motor speed
-    drift = RIGHT;
+    if (rightDistance > prevRight){
+      drift = LEFT;
+    }
+    else {
+      drift = RIGHT;
+    }
   }
 
-  else if (leftDistance > prevLeft*1.10 || leftDistance < prevLeft*0.90) {       
+  else if (leftDistance < prevLeft*1.25 && leftDistance > prevLeft*0.75) {       
     // in case right side has a path change, now using the left side as the error calculator
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
@@ -82,7 +87,12 @@ double pid_controller(float rightDistance, float leftDistance) {
   
     // rightAdjustedSpeed += correction;        // adjust right side motor speed
     // leftAdjustedSpeed -= correction;         // adjust left side motor speed
-    drift = LEFT;
+    if (leftDistance > prevLeft){
+      drift = RIGHT;
+    }
+    else {
+      drift = LEFT;
+    }
   }
 
   else  {

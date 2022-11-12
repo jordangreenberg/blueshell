@@ -5,11 +5,11 @@
 
 // TODO: NEED TO REASSIGN PIN NUMBERS
 // Define pin assignments
-#define TRIGGER_PIN  23
-#define ECHO_PIN1     8
-#define ECHO_PIN2     7
-#define ECHO_PIN3     6
-#define ECHO_PIN4     3
+#define TRIGGER_PIN  7
+#define ECHO_PIN1    2
+#define ECHO_PIN2    3
+#define ECHO_PIN3    4
+#define ECHO_PIN4    5
 
 #define MAX_DISTANCE 200
 
@@ -42,12 +42,12 @@ void readSensors()
   if (Serial.available())
   {
     // Print sensor measurements
-    Serial.print(" D1: ");
-    Serial.print(distance1);
+    //Serial.print(" D1: ");
+    //Serial.print(distance1);
     Serial.print(" D2: ");
-    Serial.println(distance2);
-    Serial.print(" D3: ");
-    Serial.print(distance3);
+    Serial.print(distance2);
+    //Serial.print(" D3: ");
+    //Serial.print(distance3);
     Serial.print(" D4: ");
     Serial.println(distance4); 
   }
