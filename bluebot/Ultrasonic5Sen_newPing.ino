@@ -3,7 +3,6 @@
 
 #include <NewPing.h>
 
-// TODO: NEED TO REASSIGN PIN NUMBERS
 // Define pin assignments
 #define TRIGGER_PIN  7
 #define ECHO_PIN1    2

@@ -159,7 +159,7 @@ void change_heading(int forwardMotor)
 
   // Set forward motors to default speed
   *rightSpeed = DEFAULT_SPEED;
-  *leftSpeed = DEFAULT_SPEED*0.53;
+  *leftSpeed = DEFAULT_SPEED*0.53; //TODO: Figure out which motors these are for and adjust for other 2 accordingly
 }
 
 int reverseHeading(int forwardMotor) {
