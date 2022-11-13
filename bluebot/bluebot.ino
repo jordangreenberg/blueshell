@@ -1,3 +1,4 @@
+
 // Define global variables
 // MOTOR VARIABLES
 int motor1_en = 12;
@@ -98,6 +99,11 @@ void loop() {
   
   // Move with corrected speeds
   drive();
+
+  Serial.print(" Left Speed: ");
+  Serial.print(*leftSpeed);
+  Serial.print("Right speed: ");
+  Serial.println(*rightSpeed);
 
   // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
   

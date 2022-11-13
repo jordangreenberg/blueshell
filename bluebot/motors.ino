@@ -1,4 +1,4 @@
-#define DEFAULT_SPEED 40
+#define DEFAULT_SPEED 170
 // MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
 // Code adapted from MC_PWM_clean.ino provided on Quercus
 // Potentially for Uno and not Mega, will have to test
@@ -105,7 +105,7 @@ void change_heading(int forwardMotor)
 
   // Set forward motors to default speed
   *rightSpeed = DEFAULT_SPEED;
-  *leftSpeed = DEFAULT_SPEED;
+  *leftSpeed = DEFAULT_SPEED*0.53;
 }
 
 void constrain_speeds()
@@ -130,16 +130,16 @@ void constrain_speeds()
 
 void adjustSpeeds(double correction)
 {
-  if (drift == RIGHT)
-  {
+//  if (drift == RIGHT)
+//  {
     *rightSpeed += (int) correction;
     *leftSpeed -= (int) correction;
-  }
-  else
-  {
-    *leftSpeed += (int) correction;
-    *rightSpeed -= (int) correction;
-  }
+//  }
+//  else
+//  {
+//    *leftSpeed += (int) correction;
+//    *rightSpeed -= (int) correction;
+//  }
   constrain_speeds();
 }
 
