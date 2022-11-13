@@ -1,4 +1,3 @@
-
 // Define global variables
 // MOTOR VARIABLES
 int motor1_en = 12;
@@ -48,15 +47,7 @@ int stepcount = 0;
 bool oriented = false;
 #define RIGHT 1
 #define LEFT 2
-
-// Notes
-
-// When implementing this for four wheels, I think we focus on activating two wheels at a time
-// The other two wheels can be "passive" and drag along
-// This should allow us to "spidercrawl" (obviously we will have to test)
-
-char val;
-
+// END OF GENERAL VARIABLES
 
 void setup() {
   // put your setup code here, to run once:
@@ -123,10 +114,11 @@ void loop() {
     // Here is where we would put the obstacle avoidance logic 
     // i.e. should we change our heading/direction that we are moving?
   
-    // If all 4 directions are clear
+    // If all 4 directions are clear - TODO: might want to remove backDistance as condition
+    // Actually this condition might not even be necessary, maybe it's just forward clear or not clear??
     if (isFourDirectionsClear(*forwardDistance, *rightDistance, *leftDistance, *backDistance)) {
       // Call controller to calculate correction
-      corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft); // TODO: merge Jose's code from nov 12
+      corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
     
       // Adjust speeds
       adjustSpeeds(corrected_speed);
@@ -141,6 +133,7 @@ void loop() {
       int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance);
 
       if (corridor == RIGHT || corridor == LEFT) {
+        int cleared = true;
         
         // If we find a corridor, keep moving forward before changing the heading
         while (clearance(*backDistance, corridorBackDistance) == false) {
@@ -160,38 +153,32 @@ void loop() {
             brake();
             forwardMotor = reverseHeading(forwardMotor);
             change_heading(forwardMotor);
+            cleared = false;
             break;
           }
         } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
 
         // Once we clear, change heading left or right to head down corridor
-        forwardMotor = rotateHeading(corridor, forwardMotor);
-        change_heading(forwardMotor);
+        if (cleared) {
+          forwardMotor = rotateHeading(corridor, forwardMotor);
+          change_heading(forwardMotor); 
+        }
       } // end of if (corridor == RIGHT || corridor == LEFT)
-      
-      else { // NO CORRIDOR
-        
-      }
-    }
+    } // end of if all four directions are clear
+
+   // Maybe here we implement some rotating in case we get too close on either left/right walls - behind shouldn't be an issue
     
-    // Call controller to calculate correction
-    corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
-  
-    // Adjust speeds
-    adjustSpeeds(corrected_speed);
-    
-    // Move with corrected speeds
-    drive();
   } // end of else forwardDistance is unsafe
 
   
 
   
-
-  Serial.print(" Left Speed: ");
-  Serial.print(*leftSpeed);
-  Serial.print("Right speed: ");
-  Serial.println(*rightSpeed);
+  if (Serial.available()) {
+    Serial.print(" Left Speed: ");
+    Serial.print(*leftSpeed);
+    Serial.print("Right speed: ");
+    Serial.println(*rightSpeed); 
+  }
 
   // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
   

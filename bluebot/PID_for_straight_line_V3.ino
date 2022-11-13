@@ -42,7 +42,6 @@ double pid_controller(float rightDistance, float leftDistance, float prevRight, 
     
   // *** may want to adjust multiplyer for corridor checks from 1.1 to something else
   
-  // TODO: confirm these conditions and drift directions, see issue on GitHub
   if (rightDistance < prevRight*1.75 && rightDistance > prevRight*0.25) {               
     // if current distance increased from prev measurement by more than 10%, new corridor detected
     // if current distance decreased from prev measurement by more than 10%, current corridor narrowed (loading zone to corridor)
