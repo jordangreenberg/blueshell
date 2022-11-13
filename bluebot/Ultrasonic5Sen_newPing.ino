@@ -14,10 +14,15 @@
 #define MAX_DISTANCE 200
 
 // SENSOR VARIABLES
-float distance1;
-float distance2;
-float distance3;
-float distance4;
+float distance1 = 0;
+float distance2 = 0;
+float distance3 = 0;
+float distance4 = 0;
+
+float prevDistance1;
+float prevDistance2;
+float prevDistance3;
+float prevDistance4;
 // END of SENSOR VARIABLES
 
 // Sensor objects
@@ -28,6 +33,11 @@ NewPing sonar4(TRIGGER_PIN, ECHO_PIN4, MAX_DISTANCE);
  
 void readSensors() 
 {
+  prevDistance1 = distance1;
+  prevDistance2 = distance2;
+  prevDistance3 = distance3;
+  prevDistance4 = distance4;
+  
   // Read each sensor 30 milliseconds apart
   delay(30);
   distance1 = sonar1.ping_cm();
