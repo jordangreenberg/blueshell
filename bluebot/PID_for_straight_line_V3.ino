@@ -19,19 +19,23 @@ double correction;
 double rightAdjustedSpeed;
 double leftAdjustedSpeed;
 
+/*
 float prevRight;
 float prevLeft;
+*/
 
-void init_controller(float rightDistance, float leftDistance) {
+void init_controller() {
   prevError = 0;
   sumError = 0;
   currTime = millis();
   prevTime = 0;
+  /*
   prevRight = rightDistance;
   prevLeft = leftDistance;
+  */
 }
 
-double pid_controller(float rightDistance, float leftDistance) {
+double pid_controller(float rightDistance, float leftDistance, float prevRight, float prevLeft) {
   // Calculate elapsed time since controller last executed
   currTime = millis();
   elapsedTime = currTime - prevTime;

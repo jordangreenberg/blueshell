@@ -36,7 +36,18 @@ int forwardMotor;
 // SENSOR VARIABLES
 float * rightDistance;
 float * leftDistance;
+float * prevRight;
+float * prevLeft;
+float * forwardDistance;
+float * backDistance;
+float corridorBackDistance = 0;
 // END OF SENSOR VARIABLES
+
+// GENERAL VARIABLES
+int stepcount = 0;
+bool oriented = false;
+#define RIGHT 1
+#define LEFT 2
 
 // Notes
 
@@ -59,22 +70,36 @@ void setup() {
   set_speed(motor3_en, motor3_speed);
   set_speed(motor4_en, motor4_speed);
 
+  // Set direction to forward
+  forwardMotor = 1;
+  change_heading(forwardMotor);
+
+  // Orient bobert
+  readSensors();
+  oriented = isOriented(*rightDistance, *leftDistance);
+
+  while (oriented == false)
+  {
+    readSensors();
+    oriented = isOriented(*rightDistance, *leftDistance);
+  }
+
   // Initialize motor directions to forward
+  /*
   change_direction(motor1_forward, motor1_in1, motor1_in2);
   change_direction(motor2_forward, motor2_in1, motor2_in2);
   change_direction(motor3_forward, motor3_in1, motor3_in2);
   change_direction(motor4_forward, motor4_in1, motor4_in2);
+  */
+
+  // Change heading to forward again for motor directions
+  change_heading(forwardMotor);
 
   // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
   readSensors();
-
-  // TODO: Determine which way we are going - should we orient first?
-  forwardMotor = 1;
-  change_heading(forwardMotor);
-  
     
   // Initialize controller
-  init_controller(*rightDistance, *leftDistance);
+  init_controller();
   
 } // end of setup()
 
@@ -88,17 +113,80 @@ void loop() {
   // Read sensors
   readSensors();
 
-  // Here is where we would put the obstacle avoidance logic 
-  // i.e. should we change our heading/direction that we are moving?
+  // If we are approaching a wall in front, stop and reverse direction
+  if (isForwardSafe(*forwardDistance) == false) {
+    brake();
+    forwardMotor = reverseHeading(forwardMotor);
+    change_heading(forwardMotor);
+  }
+  else {
+    // Here is where we would put the obstacle avoidance logic 
+    // i.e. should we change our heading/direction that we are moving?
   
-  // Call controller to calculate correction
-  corrected_speed = pid_controller(*rightDistance, *leftDistance);
+    // If all 4 directions are clear
+    if (isFourDirectionsClear(*forwardDistance, *rightDistance, *leftDistance, *backDistance)) {
+      // Call controller to calculate correction
+      corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft); // TODO: merge Jose's code from nov 12
+    
+      // Adjust speeds
+      adjustSpeeds(corrected_speed);
+      
+      // Move with corrected speeds
+      drive();
 
-  // Adjust speeds
-  adjustSpeeds(corrected_speed);
+      // Read the sensors again
+      readSensors();
   
-  // Move with corrected speeds
-  drive();
+      // Look for a corridor
+      int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance);
+
+      if (corridor == RIGHT || corridor == LEFT) {
+        
+        // If we find a corridor, keep moving forward before changing the heading
+        while (clearance(*backDistance, corridorBackDistance) == false) {
+          readSensors();
+          if (isForwardSafe(*forwardDistance)) {
+            // Call controller to calculate correction
+            corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
+          
+            // Adjust speeds
+            adjustSpeeds(corrected_speed);
+            
+            // Move with corrected speeds
+            drive();
+          }
+          else {
+            // Reverse heading and break out of this loop - something went wrong
+            brake();
+            forwardMotor = reverseHeading(forwardMotor);
+            change_heading(forwardMotor);
+            break;
+          }
+        } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
+
+        // Once we clear, change heading left or right to head down corridor
+        forwardMotor = rotateHeading(corridor, forwardMotor);
+        change_heading(forwardMotor);
+      } // end of if (corridor == RIGHT || corridor == LEFT)
+      
+      else { // NO CORRIDOR
+        
+      }
+    }
+    
+    // Call controller to calculate correction
+    corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
+  
+    // Adjust speeds
+    adjustSpeeds(corrected_speed);
+    
+    // Move with corrected speeds
+    drive();
+  } // end of else forwardDistance is unsafe
+
+  
+
+  
 
   Serial.print(" Left Speed: ");
   Serial.print(*leftSpeed);
