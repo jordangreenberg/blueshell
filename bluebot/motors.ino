@@ -1,4 +1,4 @@
-#define DEFAULT_SPEED 40
+#define DEFAULT_SPEED 170
 #define ROTATE_SPEED 60
 #define ROTATE_TIME 250
 
@@ -159,7 +159,7 @@ void change_heading(int forwardMotor)
 
   // Set forward motors to default speed
   *rightSpeed = DEFAULT_SPEED;
-  *leftSpeed = DEFAULT_SPEED;
+  *leftSpeed = DEFAULT_SPEED*0.53;
 }
 
 int reverseHeading(int forwardMotor) {
@@ -219,16 +219,16 @@ void constrain_speeds()
 
 void adjustSpeeds(double correction)
 {
-  if (drift == RIGHT)
-  {
+//  if (drift == RIGHT)
+//  {
     *rightSpeed += (int) correction;
     *leftSpeed -= (int) correction;
-  }
-  else
-  {
-    *leftSpeed += (int) correction;
-    *rightSpeed -= (int) correction;
-  }
+//  }
+//  else
+//  {
+//    *leftSpeed += (int) correction;
+//    *rightSpeed -= (int) correction;
+//  }
   constrain_speeds();
 }
 // END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////
