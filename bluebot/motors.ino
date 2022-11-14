@@ -1,4 +1,4 @@
-#define DEFAULT_SPEED 180
+#define DEFAULT_SPEED 195
 // MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
 // Code adapted from MC_PWM_clean.ino provided on Quercus
 // Potentially for Uno and not Mega, will have to test
@@ -61,8 +61,8 @@ void change_heading(int forwardMotor)
     leftSpeed = &motor3_speed;
     right_en = &motor1_en;
     left_en = &motor3_en;
-    motor1_forward = true;
-    motor3_forward = true;
+    motor1_forward = false;
+    motor3_forward = false;
     change_direction(motor1_forward, motor1_in1, motor1_in2);
     change_direction(motor3_forward, motor3_in1, motor3_in2);
 
@@ -93,8 +93,8 @@ void change_heading(int forwardMotor)
     leftSpeed = &motor1_speed;
     right_en = &motor3_en;
     left_en = &motor1_en;
-    motor3_forward = false;
-    motor1_forward = false;
+    motor3_forward = true;
+    motor1_forward = true;
     change_direction(motor3_forward, motor3_in1, motor3_in2);
     change_direction(motor1_forward, motor1_in1, motor1_in2);
 
@@ -104,8 +104,8 @@ void change_heading(int forwardMotor)
   }
 
   // Set forward motors to default speed
-  *rightSpeed = DEFAULT_SPEED;//*0.63;
-  *leftSpeed = DEFAULT_SPEED*0.5225;
+  *rightSpeed = DEFAULT_SPEED*0.48 + 25;
+  *leftSpeed = DEFAULT_SPEED + 25;//*0.55;
 }
 
 void constrain_speeds()

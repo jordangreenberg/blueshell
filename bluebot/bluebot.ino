@@ -69,7 +69,7 @@ void setup() {
   readSensors();
 
   // TODO: Determine which way we are going - should we orient first?
-  forwardMotor = 1;
+  forwardMotor = 3;
   change_heading(forwardMotor);
   
     
