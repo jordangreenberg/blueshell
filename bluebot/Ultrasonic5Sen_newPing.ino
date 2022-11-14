@@ -39,8 +39,8 @@ void readSensors()
   distance4 = sonar4.ping_cm();
   delay(30);
 
-  if (Serial.available())
-  {
+  //if (Serial.available())
+  //{
     // Print sensor measurements
     //Serial.print(" D1: ");
     //Serial.print(distance1);
@@ -50,5 +50,5 @@ void readSensors()
     //Serial.print(distance3);
     Serial.print(" D4: ");
     Serial.println(distance4); 
-  }
+  //}
 }

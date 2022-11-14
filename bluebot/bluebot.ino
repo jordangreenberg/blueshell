@@ -92,18 +92,19 @@ void loop() {
   // i.e. should we change our heading/direction that we are moving?
   
   // Call controller to calculate correction
-  corrected_speed = pid_controller(*rightDistance, *leftDistance);
+  //corrected_speed = pid_controller(*rightDistance, *leftDistance);
 
   // Adjust speeds
-  adjustSpeeds(corrected_speed);
+  adjustSpeeds();//corrected_speed);
   
   // Move with corrected speeds
   drive();
+  delay (2000);
 
-  Serial.print(" Left Speed: ");
-  Serial.print(*leftSpeed);
-  Serial.print("Right speed: ");
-  Serial.println(*rightSpeed);
+//  Serial.print(" Left Speed: ");
+//  Serial.print(*leftSpeed);
+//  Serial.print("Right speed: ");
+//  Serial.println(*rightSpeed);
 
   // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
   
@@ -120,9 +121,9 @@ void loop() {
         motor1_speed = motor1_speed + 8;
         set_speed(motor3_en, motor3_speed);
         set_speed(motor1_en, motor1_speed);
-      }
       else if(val == 's')
       {
+      }
         motor1_speed = motor1_speed - 8;
         motor2_speed = motor2_speed - 8;
         set_speed(motor1_en, motor1_speed);
