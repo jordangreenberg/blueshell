@@ -1,25 +1,38 @@
 const double BOBERT_DIAMETER = 22.86; // Bobert's diameter in cm
 const double ONE_FOOT = 30.48; // One foot in cm
-const double ORIENT_CLEARANCE = 1.0; // Orienting clearance in cm
+const double ORIENT_CLEARANCE = 3.0; // Orienting clearance in cm
 const double FORWARD_SAFE = 2.0; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 3.5; // Safe distance for all four directions in cm
 
-bool isOriented(float rightDistance, float leftDistance)
+bool isOriented(float rightDistance, float leftDistance, float forwardDistance, float backDistance)
 {
-  // Right Distance + Left Distance + Diameter should be close to a multiple of one foot +/- 1cm
+  // Right Distance + Left Distance + Diameter should be one foot, two feet, or four feet
+  // The same is true for front and back sensors
   // If it's not, then we consider bobert to be disoriented
   int right = (int) (rightDistance * 100);
   int left = (int) (leftDistance * 100);
+  int front = (int) (forwardDistance * 100 - 150); // subtract 1.5cm because front/back diameter
+  int back = (int) (backDistance * 100);
   int diameter = (int) (BOBERT_DIAMETER * 100);
   int foot = (int) (ONE_FOOT * 100);
-  int totalSpan = right + left + diameter;
+  int two_feet = foot * 2;
+  int four_feet = foot * 4;
+  int totalWidthSpan = right + left + diameter;
+  int totalLengthSpan = front + back + diameter;
   int orientClearance = (int) (ORIENT_CLEARANCE * 100);
+  
   int upperClearance  = foot - orientClearance;
-  int remainder = totalSpan % foot;
+  int widthRemainder = totalWidthSpan % foot;
+  int lengthRemainder = totalLengthSpan % foot;
 
-  // If the robot is oriented +/- 1 cm
-  if (remainder <= orientClearance || remainder >= upperClearance)
-  {
+  // If the robot is oriented to one foot +/- orient clearance
+  if ((totalWidthSpan <= foot + orientClearance && totalWidthSpan >= foot - orientClearance) && (totalLengthSpan <= foot + orientClearance && totalLengthSpan >= foot - orientClearance)) {
+    return true;
+  }
+  else if ((totalWidthSpan <= two_feet + orientClearance && totalWidthSpan >= two_feet - orientClearance) && (totalLengthSpan <= two_feet + orientClearance && totalLengthSpan >= two_feet - orientClearance)) {
+    return true;
+  }
+  else if ((totalWidthSpan <= four_feet + orientClearance && totalWidthSpan >= four_feet - orientClearance) && (totalLengthSpan <= four_feet + orientClearance && totalLengthSpan >= four_feet - orientClearance)) {
     return true;
   }
   else {
@@ -50,13 +63,15 @@ bool isFourDirectionsClear(float forwardDistance, float rightDistance, float lef
 // Return 0 if no corridor
 // Return 1 if corridor on the right
 // Return 2 if corrdior on the left
-int findCorridor(float prevLeft, float leftDistance, float prevRight, float rightDistance, float backDistance) {
+int findCorridor(float prevLeft, float leftDistance, float prevRight, float rightDistance, float backDistance, float frontDistance) {
   if (rightDistance > prevRight + ONE_FOOT) {
     corridorBackDistance = backDistance;
+    corridorFrontDistance = frontDistance;
     return 1;
   }
   else if (leftDistance > prevLeft + ONE_FOOT) {
     corridorBackDistance = backDistance;
+    corridorFrontDistance = frontDistance;
     return 2;
   }
   else {
@@ -64,8 +79,8 @@ int findCorridor(float prevLeft, float leftDistance, float prevRight, float righ
   }
 }
 
-bool clearance(float backDistance, float corridorBackDistance) {
-  if (backDistance > (corridorBackDistance + BOBERT_DIAMETER / 2)) {
+bool clearance(float backDistance, float corridorBackDistance, float frontDistance, float corridorFrontDistance) {
+  if (backDistance > (corridorBackDistance + BOBERT_DIAMETER / 2) && frontDistance > (corridorFrontDistance + BOBERT_DIAMETER / 2)) {
     return true;
   }
   else {
