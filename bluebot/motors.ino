@@ -1,4 +1,4 @@
-#define DEFAULT_SPEED 180
+#define DEFAULT_SPEED 195
 #define ROTATE_SPEED 60
 #define ROTATE_TIME 250
 
@@ -97,8 +97,8 @@ void change_heading(int forwardMotor)
     backDistance = &distance3;
 
     // Set forward motors to default speed
-    *rightSpeed = DEFAULT_SPEED;
-    *leftSpeed = DEFAULT_SPEED*0.52; //TODO: Figure out which motors these are for and adjust for other 2 accordingly
+    *rightSpeed = DEFAULT_SPEED + 25;
+    *leftSpeed = DEFAULT_SPEED*0.48 + 25;
   }
   else if (forwardMotor == 2)
   {
@@ -121,8 +121,8 @@ void change_heading(int forwardMotor)
     backDistance = &distance4;
 
     // Set forward motors to default speed
-    *rightSpeed = DEFAULT_SPEED*0.63;
-    *leftSpeed = DEFAULT_SPEED; //TODO: Figure out which motors these are for and adjust for other 2 accordingly
+    *rightSpeed = DEFAULT_SPEED*0.57;
+    *leftSpeed = DEFAULT_SPEED;
   }
   else if (forwardMotor == 3)
   {
@@ -143,6 +143,10 @@ void change_heading(int forwardMotor)
     prevLeft = &prevDistance4;
     forwardDistance = &distance3;
     backDistance = &distance1;
+
+    // Set forward motors to default speed
+    *rightSpeed = DEFAULT_SPEED*0.48 + 25;
+    *leftSpeed = DEFAULT_SPEED + 25;
   }
   else if (forwardMotor == 4)
   {
@@ -151,8 +155,8 @@ void change_heading(int forwardMotor)
     leftSpeed = &motor1_speed;
     right_en = &motor3_en;
     left_en = &motor1_en;
-    motor3_forward = false;
-    motor1_forward = false;
+    motor3_forward = true;
+    motor1_forward = true;
     change_direction(motor3_forward, motor3_in1, motor3_in2);
     change_direction(motor1_forward, motor1_in1, motor1_in2);
 
@@ -163,6 +167,10 @@ void change_heading(int forwardMotor)
     prevLeft = &prevDistance1;
     forwardDistance = &distance4;
     backDistance = &distance2;
+
+    // Set forward motors to default speed
+    *rightSpeed = DEFAULT_SPEED;
+    *leftSpeed = DEFAULT_SPEED*0.55;
   }
 }
 
