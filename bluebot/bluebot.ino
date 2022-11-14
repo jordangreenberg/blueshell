@@ -164,7 +164,7 @@ void loop() {
             // Move with corrected speeds
             drive();
 
-            delay(3500);
+            delay(1000);
 
             brake();
           }

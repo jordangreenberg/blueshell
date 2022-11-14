@@ -3,6 +3,7 @@ const double ONE_FOOT = 30.48; // One foot in cm
 const double ORIENT_CLEARANCE = 3.0; // Orienting clearance in cm
 const double FORWARD_SAFE = 2.0; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 3.5; // Safe distance for all four directions in cm
+const double CLEARANCE_TOLERANCE = 5.0; // Tolerance for clearance in cm
 
 bool isOriented(float rightDistance, float leftDistance, float forwardDistance, float backDistance)
 {
@@ -80,7 +81,7 @@ int findCorridor(float prevLeft, float leftDistance, float prevRight, float righ
 }
 
 bool clearance(float backDistance, float corridorBackDistance, float frontDistance, float corridorFrontDistance) {
-  if (backDistance > (corridorBackDistance + BOBERT_DIAMETER / 2) && frontDistance > (corridorFrontDistance + BOBERT_DIAMETER / 2)) {
+  if (backDistance > (corridorBackDistance + BOBERT_DIAMETER / 2) && frontDistance < (corridorFrontDistance - (BOBERT_DIAMETER / 2 + CLEARANCE_TOLERANCE))) {
     return true;
   }
   else {
