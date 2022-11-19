@@ -1,9 +1,9 @@
 const double BOBERT_DIAMETER = 22.86; // Bobert's diameter in cm
 const double ONE_FOOT = 30.48; // One foot in cm
 const double ORIENT_CLEARANCE = 3.0; // Orienting clearance in cm
-const double FORWARD_SAFE = 2.0; // Safe distance to move forward in cm
+const double FORWARD_SAFE = 4.0; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 3.5; // Safe distance for all four directions in cm
-const double CLEARANCE_TOLERANCE = 5.0; // Tolerance for clearance in cm
+const double CLEARANCE_TOLERANCE = 12.0; // Tolerance for clearance in cm
 
 bool isOriented(float rightDistance, float leftDistance, float forwardDistance, float backDistance)
 {
