@@ -6,6 +6,7 @@ const double SAFE_DISTANCE = 3.5; // Safe distance for all four directions in cm
 const double CLEARANCE_TOLERANCE = 12.0; // Tolerance for clearance in cm
 const int SCOOCH_DELAY = 250; // How long we scooch, in milliseconds
 
+/*
 bool isOriented(float rightDistance, float leftDistance, float forwardDistance, float backDistance)
 {
   // Right Distance + Left Distance + Diameter should be one foot, two feet, or four feet
@@ -42,6 +43,7 @@ bool isOriented(float rightDistance, float leftDistance, float forwardDistance, 
     return false;
   }
 }
+*/
 
 bool isForwardSafe(float forwardDistance) {
   if (forwardDistance > FORWARD_SAFE) {

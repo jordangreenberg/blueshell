@@ -67,12 +67,12 @@ void setup() {
   change_heading(forwardMotor);
 
   // Orient
-  bool oriented == false;
+  bool oriented = false;
   while (oriented == false) {
     // Read sensors
     readSensors();
     // Check orientation and rotate if necessary
-    oriented = isOriented(distance5, distance1);
+    oriented = isOriented();
   }
 
   // Figure out which direction to go (do we look for longest hallway or ask Matlab?)
