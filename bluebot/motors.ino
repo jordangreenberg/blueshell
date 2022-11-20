@@ -68,6 +68,7 @@ void rotate()
 }
 
 // TODO: Check this function to make sure motor assignments/sensors match real life
+// TODO: Check the ratios now that we have new motors
 void change_heading(int forwardMotor)
 {
   // Stop all motors

@@ -1,6 +1,8 @@
 //NewPing Library and Documentation can be found at
 //http://playground.arduino.cc/Code/NewPing
 
+// TODO: Add 5th sensor
+
 #include <NewPing.h>
 
 // Define pin assignments
@@ -63,4 +65,51 @@ void readSensors()
     Serial.println(" ");
     */
   //}
+}
+
+void sendSensorValues()
+{
+  if (Serial.available()>0) {
+    Serial.print(distance1);
+    Serial.print(",");
+    Serial.print(distance2);
+    Serial.print(",");
+    Serial.print(distance3);
+    Serial.print(",");
+    Serial.println(distance4);
+  }
+}
+
+int getMatlabDirection()
+{
+  String matlabInstruction;
+  int newDirection = -1;
+
+  while (true) {
+    if (Serial.available()>0) {
+      matlabInstruction = Serial.readString();
+
+      if (matlabInstruction == "0") {
+        newDirection = 1;
+        break;
+      }
+      else if (matlabInstruction == "90") {
+        newDirection = 2;
+        break;
+      }
+      else if (matlabInstruction == "180") {
+        newDirection = 3;
+        break;
+      }
+      else if (matlabInstruction == "270") {
+        newDirection = 4;
+        break;
+      }
+    }
+    else {
+      break;
+    }
+  }
+
+  return newDirection;
 }
