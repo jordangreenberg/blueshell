@@ -24,6 +24,3 @@ void isOriented (float sensor5_reading, float sensor1_reading){
     }
   }
 }
-
-
-

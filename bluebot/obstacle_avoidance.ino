@@ -4,6 +4,7 @@ const double ORIENT_CLEARANCE = 3.0; // Orienting clearance in cm
 const double FORWARD_SAFE = 4.0; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 3.5; // Safe distance for all four directions in cm
 const double CLEARANCE_TOLERANCE = 12.0; // Tolerance for clearance in cm
+const int SCOOCH_DELAY = 250; // How long we scooch, in milliseconds
 
 bool isOriented(float rightDistance, float leftDistance, float forwardDistance, float backDistance)
 {
@@ -86,6 +87,33 @@ bool clearance(float backDistance, float corridorBackDistance, float frontDistan
   }
   else {
     false;
+  }
+}
+
+void scooch_scooch() {
+  if (distance1 < SAFE_DISTANCE) {
+    change_heading(3);
+    drive();
+    delay(SCOOCH_DELAY);
+    brake();
+  }
+  if (distance2 < SAFE_DISTANCE) {
+    change_heading(4);
+    drive();
+    delay(SCOOCH_DELAY);
+    brake();
+  }
+  if (distance3 < SAFE_DISTANCE) {
+    change_heading(1);
+    drive();
+    delay(SCOOCH_DELAY);
+    brake();
+  }
+  if (distance4 < SAFE_DISTANCE) {
+    change_heading(2);
+    drive();
+    delay(SCOOCH_DELAY);
+    brake();
   }
 }
 
