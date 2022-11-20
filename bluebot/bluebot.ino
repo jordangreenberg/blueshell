@@ -65,28 +65,18 @@ void setup() {
   // Set direction to forward
   forwardMotor = 1;
   change_heading(forwardMotor);
-  
-  /*
-  // Orient bobert
-  int i = 0;
-  readSensors();
-  oriented = isOriented(*rightDistance, *leftDistance, *forwardDistance, *backDistance);
-  Serial.print("Orient i: ");
-  Serial.print(i);
-  Serial.print("Oriented? ");
-  Serial.println(oriented);
 
-  while (oriented == false)
-  {
-    i++;
+  // Orient
+  bool oriented = false;
+  while (oriented == false) {
+    // Read sensors
     readSensors();
-    oriented = isOriented(*rightDistance, *leftDistance, *forwardDistance, *backDistance);
-    Serial.print("Orient i: ");
-    Serial.print(i);
-    Serial.print(" Oriented? ");
-    Serial.println(oriented);
+    // Check orientation and rotate if necessary
+    oriented = isOriented();
   }
-  */
+
+  // Figure out which direction to go (do we look for longest hallway or ask Matlab?)
+  
   // Initialize motor directions to forward
   /*
   change_direction(motor1_forward, motor1_in1, motor1_in2);
@@ -97,9 +87,6 @@ void setup() {
 
   // Change heading to forward again for motor directions
   change_heading(forwardMotor);
-
-  // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
-  readSensors();
     
   // Initialize controller
   //init_controller();
@@ -161,6 +148,7 @@ void loop() {
 
       brake();
 
+      // Below code might not be needed if we get path planning in place
       // Read the sensors again
       readSensors();
   
