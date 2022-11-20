@@ -11,6 +11,7 @@
 #define ECHO_PIN2    3
 #define ECHO_PIN3    4
 #define ECHO_PIN4    5
+#define ECHO_PIN5    6
 
 #define MAX_DISTANCE 200
 
@@ -19,11 +20,13 @@ float distance1 = 0;
 float distance2 = 0;
 float distance3 = 0;
 float distance4 = 0;
+float distance5 = 0;
 
 float prevDistance1;
 float prevDistance2;
 float prevDistance3;
 float prevDistance4;
+float prevDistance5;
 // END of SENSOR VARIABLES
 
 // Sensor objects
@@ -31,6 +34,7 @@ NewPing sonar1(TRIGGER_PIN, ECHO_PIN1, MAX_DISTANCE);
 NewPing sonar2(TRIGGER_PIN, ECHO_PIN2, MAX_DISTANCE);
 NewPing sonar3(TRIGGER_PIN, ECHO_PIN3, MAX_DISTANCE);
 NewPing sonar4(TRIGGER_PIN, ECHO_PIN4, MAX_DISTANCE);
+NewPing sonar5(TRIGGER_PIN, ECHO_PIN5, MAX_DISTANCE);
  
 void readSensors() 
 {
@@ -38,6 +42,7 @@ void readSensors()
   prevDistance2 = distance2;
   prevDistance3 = distance3;
   prevDistance4 = distance4;
+  prevDistance5 = distance5;
   
   // Read each sensor 30 milliseconds apart
   delay(30);
@@ -48,6 +53,8 @@ void readSensors()
   distance3 = sonar3.ping_cm();
   delay(30);
   distance4 = sonar4.ping_cm();
+  delay(30);
+  distance5 = sonar5.ping_cm();
   delay(30);
 
   //if (Serial.available())

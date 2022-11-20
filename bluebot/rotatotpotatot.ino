@@ -1,5 +1,8 @@
 #define ROTATE_SPEED 90
 
+int * frontSpeed;
+int * backSpeed;
+
 void rotate_clockwise (){
   rightSpeed = &motor1_speed;
   leftSpeed = &motor3_speed;
@@ -21,6 +24,10 @@ void rotate_clockwise (){
   *leftSpeed = ROTATE_SPEED;
   *frontSpeed = ROTATE_SPEED;
   *backSpeed = ROTATE_SPEED;
+  set_speed(*right_en, *rightSpeed);
+  set_speed(*left_en, *leftSpeed);
+  set_speed(*front_en, *frontSpeed);
+  set_speed(*back_en, *backSpeed);
 }
 
 void rotate_counter_clockwise (){
@@ -44,5 +51,9 @@ void rotate_counter_clockwise (){
   *leftSpeed = ROTATE_SPEED;
   *frontSpeed = ROTATE_SPEED;
   *backSpeed = ROTATE_SPEED;
+  set_speed(*right_en, *rightSpeed);
+  set_speed(*left_en, *leftSpeed);
+  set_speed(*front_en, *frontSpeed);
+  set_speed(*back_en, *backSpeed);
 
 }
