@@ -27,7 +27,11 @@ bool motor4_forward = true;
 double corrected_speed = 0;
 int * rightSpeed;
 int * leftSpeed;
+int * frontSpeed;
+int * backSpeed;
 int * right_en;
+int * front_en;
+int * back_en;
 int * left_en;
 int forwardMotor;
 // END of MOTOR VARIABLES
@@ -39,6 +43,7 @@ float * prevRight;
 float * prevLeft;
 float * forwardDistance;
 float * backDistance;
+float * five_distance;
 float corridorBackDistance = 0;
 float corridorFrontDistance = 0;
 // END OF SENSOR VARIABLES
@@ -52,9 +57,8 @@ bool oriented = false;
 
 void setup() {
   // put your setup code here, to run once:
-  
   Serial.begin(9600);
-  // Serial.println("Greetings bluebots");
+  Serial.println("Greetings bluebots");
 
   // Initialize motor speeds to 0
   set_speed(motor1_en, motor1_speed);
@@ -96,10 +100,14 @@ void setup() {
   */
 
   // Change heading to forward again for motor directions
-  change_heading(forwardMotor);
+ // change_heading(forwardMotor);
 
   // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
   readSensors();
+  while (true) {
+  rotate_counter_clockwise();
+  }
+  
     
   // Initialize controller
   //init_controller();
@@ -115,25 +123,6 @@ void loop() {
   
   // Read sensors
   readSensors();
-
-  // Scooch away from walls we are too close to
-  scooch_scooch();
-
-  // Change direction back to the forward direction
-  change_heading(forwardMotor);
-
-  // Read sensors again for localization
-  readSensors();
-  sendSensorValues();
-
-  // Wait for MATLAB to respond with directions
-  int matlabForwardMotor = getMatlabDirection();
-
-  // If we got a valid newDirection, assign that and change directions
-  if (matlabForwardMotor != -1) {
-    forwardMotor = matlabForwardMotor;
-    change_heading(forwardMotor);
-  }
 
   // If we are approaching a wall in front, stop and reverse direction
   if (isForwardSafe(*forwardDistance) == false) {

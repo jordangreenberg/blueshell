@@ -9,7 +9,7 @@ void rotate_clockwise (){
   left_en = &motor3_en;
   front_en = &motor2_en;
   back_en = &motor4_en;
-  motor1_forward = true; // BEWARE CHANGED THIS TO FALSE
+  motor1_forward = true; 
   motor3_forward = false; // idk yet need to verify
   motor2_forward = false;
   motor4_forward = true;
@@ -21,17 +21,22 @@ void rotate_clockwise (){
   *leftSpeed = ROTATE_SPEED;
   *frontSpeed = ROTATE_SPEED;
   *backSpeed = ROTATE_SPEED;
+  set_speed(*right_en, *rightSpeed);
+  set_speed(*left_en, *leftSpeed);
+  set_speed(*front_en, *frontSpeed);
+  set_speed(*back_en, *backSpeed);
 }
 
 void rotate_counter_clockwise (){
+  Serial.println("");
   rightSpeed = &motor1_speed;
   leftSpeed = &motor3_speed;
   frontSpeed = &motor2_speed;
   backSpeed = &motor4_speed;
-  right_en = &motor1_en;
-  left_en = &motor3_en;
-  front_en = &motor2_en;
-  back_en = &motor4_en;
+  right_en = &motor4_en;
+  left_en = &motor2_en;
+  front_en = &motor1_en;
+  back_en = &motor3_en;
   motor1_forward = false; // BEWARE CHANGED THIS TO FALSE
   motor3_forward = true; // idk yet need to verify
   motor2_forward = true;
@@ -44,5 +49,10 @@ void rotate_counter_clockwise (){
   *leftSpeed = ROTATE_SPEED;
   *frontSpeed = ROTATE_SPEED;
   *backSpeed = ROTATE_SPEED;
+  set_speed(*right_en, *rightSpeed);
+  set_speed(*left_en, *leftSpeed);
+  set_speed(*front_en, *frontSpeed);
+  set_speed(*back_en, *backSpeed);
+  //Serial.println(*backSpeed);
 
 }

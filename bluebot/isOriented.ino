@@ -1,26 +1,44 @@
-const double BOBERT_DIAMETER = 22.86;
-const double ONE_FOOT = 30.48;
 const double tolerance_orient = 0.2;
-void isOriented (float sensor5_reading, float sensor1_reading){
+
+void isOriented(){
+ 
   bool oriented = false;
   while (oriented == false){
-    if (sensor5_reading < (1-tolerance_orient)*sensor1_reading){ // checks if sensors are reading similar values, if not, rotate until they are within the tolerance
-      rotate_clockwise();
+  readSensors ();
+  delay (30);
+  readSensor5();    
+    if (distance5 < (1-tolerance_orient)*distance1){ // checks if sensors are reading similar values, if not, rotate until they are within the tolerance
+      rotate_counter_clockwise();
       delay (250);
-      brake ();
-      if sensor5_reading >(1-tolerance_orient) * sensor1_reading && sensor5_reading < (1 + tolerance_orient) * sensor1_reading{
+      brake();
+      if ((distance5 > (1-tolerance_orient) * distance1) && (distance5 < (1 + tolerance_orient) * distance1)){
         oriented = true;
       }
-    if (sensor1_reading < (1-tolerance_orient)*sensor5_reading){
-      rotate_counter_clockwise();
-      delay(250);
-      brake ();
-      if sensor1_reading >(1-tolerance_orient) * sensor5_reading && sensor1_reading < (1 + tolerance_orient) * sensor5_reading{
+    }      
+    if (distance1 < (1-tolerance_orient)*distance5){
+      rotate_clockwise();
+      delay (250);
+      brake();
+      if ((distance1 >(1-tolerance_orient) * distance5) && (distance1 < (1 + tolerance_orient) * distance5)){
         oriented = true;
       }
     }
     else{
-      oriented = true;
+      oriented = true; 
     }
-  }
-}
+   /* Serial.println("d5:");
+    Serial.print(distance5);
+    Serial.println(" ");
+    Serial.print("d1");
+    Serial.println(" ");
+    Serial.println(distance1);
+    Serial.println(" ");
+    Serial.println("orrient?:");
+    Serial.print(oriented);
+    Serial.println(" ");*/
+  }   
+}  
+
+
+
+
