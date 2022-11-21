@@ -1,4 +1,4 @@
-const double tolerance_orient = 0.2;
+const double tolerance_orient = 0.21;
 
 void isOriented(){
  
@@ -7,22 +7,35 @@ void isOriented(){
   readSensors ();
   delay (30);
   readSensor5();    
-    if (distance5 < (1-tolerance_orient)*distance1){ // checks if sensors are reading similar values, if not, rotate until they are within the tolerance
+    if (distance5 < (1-tolerance_orient)*distance1){ // checks if sensors are reading similar values
+      if (distance4 < 10){
       rotate_counter_clockwise();
-      delay (250);
+      delay (200);
       brake();
+      }
+      else {
+      rotate_clockwise();
+      delay (200);
+      brake();
+      }      
       if ((distance5 > (1-tolerance_orient) * distance1) && (distance5 < (1 + tolerance_orient) * distance1)){
         oriented = true;
       }
     }      
     if (distance1 < (1-tolerance_orient)*distance5){
+      if (distance2 < 10){
       rotate_clockwise();
-      delay (250);
+      delay (200);
       brake();
-      if ((distance1 >(1-tolerance_orient) * distance5) && (distance1 < (1 + tolerance_orient) * distance5)){
-        oriented = true;
       }
-    }
+      else {
+      rotate_counter_clockwise();
+      delay (200);
+      brake();
+      }
+      if ((distance5 > (1-tolerance_orient) * distance1) && (distance5 < (1 + tolerance_orient) * distance1)){
+      oriented = true;
+      }      
     else{
       oriented = true; 
     }
@@ -36,6 +49,7 @@ void isOriented(){
     Serial.println("orrient?:");
     Serial.print(oriented);
     Serial.println(" ");*/
+    }  
   }   
 }  
 

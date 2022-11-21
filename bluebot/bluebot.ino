@@ -50,7 +50,6 @@ float corridorFrontDistance = 0;
 
 // GENERAL VARIABLES
 int stepcount = 0;
-bool oriented = false;
 #define RIGHT 1
 #define LEFT 2
 // END OF GENERAL VARIABLES
@@ -104,10 +103,7 @@ void setup() {
 
   // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
   readSensors();
-  while (true) {
-  rotate_counter_clockwise();
-  }
-  
+
     
   // Initialize controller
   //init_controller();
@@ -150,6 +146,8 @@ void loop() {
 
       brake();
 
+      isOriented();
+
       // Read the sensors again
       readSensors();
   
@@ -175,6 +173,9 @@ void loop() {
             delay(1000);
 
             brake();
+            
+            isOriented();
+
           }
           else {
             // Reverse heading and break out of this loop - something went wrong

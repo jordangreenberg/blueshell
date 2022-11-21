@@ -37,10 +37,10 @@ bool isOriented(float rightDistance, float leftDistance, float forwardDistance, 
   else if ((totalWidthSpan <= four_feet + orientClearance && totalWidthSpan >= four_feet - orientClearance) && (totalLengthSpan <= four_feet + orientClearance && totalLengthSpan >= four_feet - orientClearance)) {
     return true;
   }
-  else {
+  /*else {
     rotate(); // Rotate 2 degrees
     return false;
-  }
+  }*/
 }
 
 bool isForwardSafe(float forwardDistance) {

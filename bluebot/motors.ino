@@ -1,5 +1,4 @@
-#define DEFAULT_SPEED 195
-#define ROTATE_SPEED 60
+#define DEFAULT_SPEED 120
 #define ROTATE_TIME 250
 
 // MOTOR CONTROLLER FUNCTIONS /////////////////////////////////
@@ -47,7 +46,7 @@ void brake() {
 }
 
 // Function to rotate the robot in baby steps (ideally 2 degrees at a time)
-void rotate()
+/*void rotate()
 {
   // Set motor directions to rotate clockwise
   change_direction(false, motor1_in1, motor1_in2);
@@ -66,7 +65,7 @@ void rotate()
   // Set rotate speed
   brake();
 }
-
+*/
 // TODO: Check this function to make sure motor assignments/sensors match real life
 // TODO: Check the ratios now that we have new motors
 void change_heading(int forwardMotor)
@@ -84,8 +83,8 @@ void change_heading(int forwardMotor)
     leftSpeed = &motor2_speed;
     right_en = &motor4_en;
     left_en = &motor2_en;
-    motor4_forward = true;
-    motor2_forward = true;
+    motor4_forward = false;
+    motor2_forward = false;
     change_direction(motor4_forward, motor4_in1, motor4_in2);
     change_direction(motor2_forward, motor2_in1, motor2_in2);
 
