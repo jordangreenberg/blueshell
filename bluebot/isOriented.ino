@@ -1,7 +1,7 @@
-const double tolerance_orient = 0.21;
+const double tolerance_orient = 0.3;
 
 void isOriented(){
- 
+  scooch_scooch();
   bool oriented = false;
   while (oriented == false){
   readSensors ();
@@ -49,7 +49,8 @@ void isOriented(){
     Serial.println("orrient?:");
     Serial.print(oriented);
     Serial.println(" ");*/
-    }  
+    } 
+    scooch_scooch() ;
   }   
 }  
 

@@ -102,9 +102,9 @@ void setup() {
  // change_heading(forwardMotor);
 
   // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
-  readSensors();
-
-    
+  isOriented();
+  forwardMotor = clearestDirection();
+  change_heading(forwardMotor);
   // Initialize controller
   //init_controller();
   
@@ -123,7 +123,7 @@ void loop() {
   // If we are approaching a wall in front, stop and reverse direction
   if (isForwardSafe(*forwardDistance) == false) {
     brake();
-    forwardMotor = reverseHeading(forwardMotor);
+    forwardMotor = clearestDirection();
     change_heading(forwardMotor);
   }
   else {
@@ -142,20 +142,23 @@ void loop() {
       // Move with corrected speeds
       drive();
 
-      delay(1000);
+      delay(200);
 
       brake();
 
       isOriented();
 
+      brake();
+
       // Read the sensors again
       readSensors();
   
       // Look for a corridor
-      int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);
+      int corridor = new_corridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);      
+      //int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);
 
       if (corridor == RIGHT || corridor == LEFT) {
-        int cleared = true;
+        //int cleared = true;
         
         // If we find a corridor, keep moving forward before changing the heading
         while (clearance(*backDistance, corridorBackDistance, *forwardDistance, corridorFrontDistance) == false) {
@@ -170,30 +173,33 @@ void loop() {
             // Move with corrected speeds
             drive();
 
-            delay(1000);
+            delay(200);
 
             brake();
-            
-            isOriented();
 
           }
           else {
-            // Reverse heading and break out of this loop - something went wrong
+            
+            break;
+           /* // Reverse heading and break out of this loop - something went wrong
             brake();
             forwardMotor = reverseHeading(forwardMotor);
             change_heading(forwardMotor);
             cleared = false;
-            break;
-          }
+            break;*/
+          } 
         } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
 
         // Once we clear, change heading left or right to head down corridor
-        if (cleared) {
-          forwardMotor = rotateHeading(corridor, forwardMotor);
-          Serial.print("Forward motor is now: ");
-          Serial.println(forwardMotor);
-          change_heading(forwardMotor); 
-        }
+        
+        forwardMotor = rotateHeading(corridor, forwardMotor);
+        Serial.print("Forward motor is now: ");
+        Serial.println(forwardMotor);
+        change_heading(forwardMotor); 
+        drive();
+        delay(200);
+        brake();
+        
       } // end of if (corridor == RIGHT || corridor == LEFT)
     //} // end of if all four directions are clear
 
