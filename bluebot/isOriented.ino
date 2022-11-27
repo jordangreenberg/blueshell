@@ -6,7 +6,6 @@ void isOriented(){
   while (oriented == false){
   readSensors ();
   delay (30);
-  readSensor5();    
     if (distance5 < (1-tolerance_orient)*distance1){ // checks if sensors are reading similar values
       if (distance4 < 10){
       rotate_counter_clockwise();
@@ -53,7 +52,3 @@ void isOriented(){
     scooch_scooch() ;
   }   
 }  
-
-
-
-

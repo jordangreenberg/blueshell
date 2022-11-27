@@ -28,7 +28,6 @@ void rotate_clockwise (){
 }
 
 void rotate_counter_clockwise (){
-  Serial.println("");
   rightSpeed = &motor1_speed;
   leftSpeed = &motor3_speed;
   frontSpeed = &motor2_speed;
@@ -53,6 +52,4 @@ void rotate_counter_clockwise (){
   set_speed(*left_en, *leftSpeed);
   set_speed(*front_en, *frontSpeed);
   set_speed(*back_en, *backSpeed);
-  //Serial.println(*backSpeed);
-
 }
