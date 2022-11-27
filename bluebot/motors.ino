@@ -45,6 +45,7 @@ void brake() {
   set_speed(motor4_en, 0);
 }
 
+/*
 // Function to rotate the robot in baby steps (ideally 2 degrees at a time)
 /*void rotate()
 {
@@ -66,6 +67,7 @@ void brake() {
   brake();
 }
 */
+
 // TODO: Check this function to make sure motor assignments/sensors match real life
 // TODO: Check the ratios now that we have new motors
 void change_heading(int forwardMotor)

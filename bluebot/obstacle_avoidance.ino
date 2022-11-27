@@ -5,6 +5,7 @@ const double FORWARD_SAFE = 5; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 5; // Safe distance for all four directions in cm
 const double CLEARANCE_TOLERANCE = 5; // Tolerance for clearance in cm
 const int SCOOCH_DELAY = 250; // How long we scooch, in milliseconds
+
 const double corriDist = 15;
 
 bool isForwardSafe(float forwardDistance) {

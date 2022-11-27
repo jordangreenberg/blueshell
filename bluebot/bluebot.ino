@@ -164,6 +164,7 @@ void loop() {
 
       brake();
 
+      // Below code might not be needed if we get path planning in place
       // Read the sensors again
       readSensors();
   
