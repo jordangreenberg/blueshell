@@ -6,8 +6,7 @@
 // Potentially for Uno and not Mega, will have to test
 
 // Set speed of a motor given the motor enable pin and the desired speed
-void set_speed(int motor_en, int desired_speed)
-{
+void set_speed(int motor_en, int desired_speed) {
   // Safety check to ensure speed is valid
   if (desired_speed >= 0 && desired_speed <= 255)
   {
@@ -77,6 +76,8 @@ void change_heading(int forwardMotor)
   set_speed(motor2_en, 0);
   set_speed(motor3_en, 0);
   set_speed(motor4_en, 0);
+
+  //if matlab says 0 then set forward motor to 1
   
   if (forwardMotor == 1)
   {

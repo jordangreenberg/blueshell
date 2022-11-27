@@ -95,25 +95,25 @@ bool clearance(float backDistance, float corridorBackDistance, float frontDistan
 void scooch_scooch() {
   if (distance1 < SAFE_DISTANCE) {
     change_heading(3);
-    drive();
+    drive_pid();
     delay(SCOOCH_DELAY);
     brake();
   }
   if (distance2 < SAFE_DISTANCE) {
     change_heading(4);
-    drive();
+    drive_pid();
     delay(SCOOCH_DELAY);
     brake();
   }
   if (distance3 < SAFE_DISTANCE) {
     change_heading(1);
-    drive();
+    drive_pid();
     delay(SCOOCH_DELAY);
     brake();
   }
   if (distance4 < SAFE_DISTANCE) {
     change_heading(2);
-    drive();
+    drive_pid();
     delay(SCOOCH_DELAY);
     brake();
   }
