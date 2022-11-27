@@ -1,3 +1,4 @@
+# include <PID_v1.h>
 // Define global variables
 // MOTOR VARIABLES
 int motor1_en = 12;
@@ -27,7 +28,11 @@ bool motor4_forward = true;
 double corrected_speed = 0;
 int * rightSpeed;
 int * leftSpeed;
+int * frontSpeed;
+int * backSpeed;
 int * right_en;
+int * front_en;
+int * back_en;
 int * left_en;
 int forwardMotor;
 // END of MOTOR VARIABLES
@@ -39,22 +44,35 @@ float * prevRight;
 float * prevLeft;
 float * forwardDistance;
 float * backDistance;
+float * five_distance;
 float corridorBackDistance = 0;
 float corridorFrontDistance = 0;
 // END OF SENSOR VARIABLES
 
 // GENERAL VARIABLES
 int stepcount = 0;
-bool oriented = false;
 #define RIGHT 1
 #define LEFT 2
 // END OF GENERAL VARIABLES
 
+double Setpoint, SetpointReverse, InputDirect, OutputDirect;
+double InputReverse, OutputReverse;
+
+// Tune kp THEN kd, THEN ki as needed. May need to have seperate k values for direct/reverse controllers
+double kp = 0.3;
+double ki = 1.9; 
+double kd = 1.9;
+
+// Direct and reverse PIDs to make adjustment in each direction
+
+PID DirectPID(&InputDirect, &OutputDirect, &Setpoint, kp, ki, kd, DIRECT); 
+PID ReversePID(&InputReverse, &OutputReverse, &SetpointReverse, kp, ki, kd, REVERSE);
+// & indicates variable value passed to function may change by function
+
 void setup() {
   // put your setup code here, to run once:
-  
   Serial.begin(9600);
-  // Serial.println("Greetings bluebots");
+  Serial.println("Greetings bluebots");
 
   // Initialize motor speeds to 0
   set_speed(motor1_en, motor1_speed);
@@ -66,30 +84,22 @@ void setup() {
   forwardMotor = 1;
   change_heading(forwardMotor);
 
-  // Orient
-  bool oriented = false;
-  while (oriented == false) {
-    // Read sensors
-    readSensors();
-    // Check orientation and rotate if necessary
-    oriented = isOriented();
-  }
-
-  // Figure out which direction to go (do we look for longest hallway or ask Matlab?)
-  
-  // Initialize motor directions to forward
-  /*
-  change_direction(motor1_forward, motor1_in1, motor1_in2);
-  change_direction(motor2_forward, motor2_in1, motor2_in2);
-  change_direction(motor3_forward, motor3_in1, motor3_in2);
-  change_direction(motor4_forward, motor4_in1, motor4_in2);
-  */
-
-  // Change heading to forward again for motor directions
+  // Take a sesnor measurement (so prevRight and prevLeft are initialized to current)
+  isOriented();
+  forwardMotor = clearestDirection();
   change_heading(forwardMotor);
-    
-  // Initialize controller
-  //init_controller();
+
+  //PID
+  // Setpoint is desired distance from wall to right side robot
+  Setpoint = 8;
+  SetpointReverse = 8;
+  
+  // turn PID on
+  DirectPID.SetMode(AUTOMATIC);
+  DirectPID.SetOutputLimits(0, 75);
+  
+  ReversePID.SetMode(AUTOMATIC);
+  ReversePID.SetOutputLimits(0, 75);
   
 } // end of setup()
 
@@ -102,6 +112,7 @@ void loop() {
   
   // Read sensors
   readSensors();
+  sendSensorValues();
 
   // Scooch away from walls we are too close to
   scooch_scooch();
@@ -125,7 +136,7 @@ void loop() {
   // If we are approaching a wall in front, stop and reverse direction
   if (isForwardSafe(*forwardDistance) == false) {
     brake();
-    forwardMotor = reverseHeading(forwardMotor);
+    forwardMotor = clearestDirection();
     change_heading(forwardMotor);
   }
   else {
@@ -142,9 +153,14 @@ void loop() {
       //adjustSpeeds(corrected_speed);
       
       // Move with corrected speeds
-      drive();
+      drive_pid();
 
-      delay(1000);
+      delay(200); // MAYBE 1000?
+
+      brake();
+
+      // PUT BACK IS ORIENTED?
+      // isOriented();
 
       brake();
 
@@ -153,106 +169,57 @@ void loop() {
       readSensors();
   
       // Look for a corridor
-      int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);
-
-      if (corridor == RIGHT || corridor == LEFT) {
-        int cleared = true;
-        
-        // If we find a corridor, keep moving forward before changing the heading
-        while (clearance(*backDistance, corridorBackDistance, *forwardDistance, corridorFrontDistance) == false) {
-          readSensors();
-          if (isForwardSafe(*forwardDistance)) {
-            // Call controller to calculate correction
-            //corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
-          
-            // Adjust speeds
-            //adjustSpeeds(corrected_speed);
-            
-            // Move with corrected speeds
-            drive();
-
-            delay(1000);
-
-            brake();
-          }
-          else {
-            // Reverse heading and break out of this loop - something went wrong
-            brake();
-            forwardMotor = reverseHeading(forwardMotor);
-            change_heading(forwardMotor);
-            cleared = false;
-            break;
-          }
-        } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
-
-        // Once we clear, change heading left or right to head down corridor
-        if (cleared) {
-          forwardMotor = rotateHeading(corridor, forwardMotor);
-          Serial.print("Forward motor is now: ");
-          Serial.println(forwardMotor);
-          change_heading(forwardMotor); 
-        }
-      } // end of if (corridor == RIGHT || corridor == LEFT)
-    //} // end of if all four directions are clear
-
-   // Maybe here we implement some rotating in case we get too close on either left/right walls - behind shouldn't be an issue
-    
-  } // end of else forwardDistance is unsafe
-
-  
-
-  /*
-  if (Serial.available()) {
-    Serial.print(" Left Speed: ");
-    Serial.print(*leftSpeed);
-    Serial.print("Right speed: ");
-    Serial.println(*rightSpeed); 
+      //int corridor = new_corridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);      
+      //int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);
   }
-  */
-  // KEEPING THE BELOW CODE FOR NOW TO TEST MOTORS
-  
-  // This code will control two motors that are setup in left/right configuration
-  // 'w' (forward), 'a' (left), 's' (backward), 'd' (right), 'k' (stop) can be input to control the motors
-  /*
-  if (Serial.available())
-  {
-    val = Serial.read();
-    Serial.println(val); // print out input
-    if (val == 'w')
-      {
-        motor3_speed = motor3_speed + 8;
-        motor1_speed = motor1_speed + 8;
-        set_speed(motor3_en, motor3_speed);
-        set_speed(motor1_en, motor1_speed);
-      }
-      else if(val == 's')
-      {
-        motor1_speed = motor1_speed - 8;
-        motor2_speed = motor2_speed - 8;
-        set_speed(motor1_en, motor1_speed);
-        set_speed(motor2_en, motor2_speed);
-      }
-      else if(val == 'd')
-      {
-        motor1_speed = motor1_speed + 8;
-        motor2_speed = motor2_speed - 8;
-        set_speed(motor1_en, motor1_speed);
-        set_speed(motor2_en, motor2_speed);
-      }
-      else if(val == 'a')
-      {
-        motor1_speed = motor1_speed - 8;
-        motor2_speed = motor2_speed + 8;
-        set_speed(motor1_en, motor1_speed);
-        set_speed(motor2_en, motor2_speed);
-      }
-      else if(val == 'k')
-      {
-        motor4_speed = 0;
-        motor2_speed = 0;
-        set_speed(motor4_en, motor4_speed);
-        set_speed(motor2_en, motor2_speed);
-      }
-  } // end of if (Serial.available())
-  */
+//// COMMENTING OUT THE REST OF THE CODE HERE
+//      if (corridor == RIGHT || corridor == LEFT) {
+//        //int cleared = true;
+//        
+//        // If we find a corridor, keep moving forward before changing the heading
+//        while (clearance(*backDistance, corridorBackDistance, *forwardDistance, corridorFrontDistance) == false) {
+//          readSensors();
+//          if (isForwardSafe(*forwardDistance)) {
+//            // Call controller to calculate correction
+//            //corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
+//          
+//            // Adjust speeds
+//            //adjustSpeeds(corrected_speed);
+//            
+//            // Move with corrected speeds
+//            drive();
+//
+//            delay(200);
+//
+//            brake();
+//
+//          }
+//          else {
+//            
+//            break;
+//           /* // Reverse heading and break out of this loop - something went wrong
+//            brake();
+//            forwardMotor = reverseHeading(forwardMotor);
+//            change_heading(forwardMotor);
+//            cleared = false;
+//            break;*/
+//          } 
+//        } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
+//
+//        // Once we clear, change heading left or right to head down corridor
+//        
+//        forwardMotor = rotateHeading(corridor, forwardMotor);
+//        Serial.print("Forward motor is now: ");
+//        Serial.println(forwardMotor);
+//        change_heading(forwardMotor); 
+//        drive();
+//        delay(200);
+//        brake();
+//        
+//      } // end of if (corridor == RIGHT || corridor == LEFT)
+//    //} // end of if all four directions are clear
+//
+//   // Maybe here we implement some rotating in case we get too close on either left/right walls - behind shouldn't be an issue
+//    
+//  } // end of else forwardDistance is unsafe
 } // end of loop()

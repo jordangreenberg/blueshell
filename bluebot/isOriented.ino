@@ -1,30 +1,54 @@
-//const double BOBERT_DIAMETER = 22.86;
-//const double ONE_FOOT = 30.48;
-const double tolerance_orient = 0.2;
-bool isOriented (){
-  float sensor5_reading = distance5;
-  float sensor1_reading = distance1;
+const double tolerance_orient = 0.3;
+
+void isOriented(){
+  scooch_scooch();
   bool oriented = false;
   while (oriented == false){
-    if (sensor5_reading < (1-tolerance_orient)*sensor1_reading){ // checks if sensors are reading similar values, if not, rotate until they are within the tolerance
-      rotate_clockwise();
-      delay (250);
-      brake ();
-      if (sensor5_reading >(1-tolerance_orient) * sensor1_reading && sensor5_reading < (1 + tolerance_orient) * sensor1_reading) {
-        oriented = true;
-      }
-    } // end of if sensor5 < (1-tolerance)*sensor1
-    else if (sensor1_reading < (1-tolerance_orient)*sensor5_reading){
+  readSensors ();
+  delay (30);
+    if (distance5 < (1-tolerance_orient)*distance1){ // checks if sensors are reading similar values
+      if (distance4 < 10){
       rotate_counter_clockwise();
-      delay(250);
-      brake ();
-      if (sensor1_reading >(1-tolerance_orient) * sensor5_reading && sensor1_reading < (1 + tolerance_orient) * sensor5_reading) {
+      delay (200);
+      brake();
+      }
+      else {
+      rotate_clockwise();
+      delay (200);
+      brake();
+      }      
+      if ((distance5 > (1-tolerance_orient) * distance1) && (distance5 < (1 + tolerance_orient) * distance1)){
         oriented = true;
       }
-    } // end of if sensor1 < (1-tolerance)*sensor5
-    else{
+    }      
+    if (distance1 < (1-tolerance_orient)*distance5){
+      if (distance2 < 10){
+      rotate_clockwise();
+      delay (200);
+      brake();
+      }
+      else {
+      rotate_counter_clockwise();
+      delay (200);
+      brake();
+      }
+      if ((distance5 > (1-tolerance_orient) * distance1) && (distance5 < (1 + tolerance_orient) * distance1)){
       oriented = true;
+      }      
+    else{
+      oriented = true; 
     }
-  } // end of while loop
-  return oriented;
-} // end of isOriented()
+   /* Serial.println("d5:");
+    Serial.print(distance5);
+    Serial.println(" ");
+    Serial.print("d1");
+    Serial.println(" ");
+    Serial.println(distance1);
+    Serial.println(" ");
+    Serial.println("orrient?:");
+    Serial.print(oriented);
+    Serial.println(" ");*/
+    } 
+    scooch_scooch() ;
+  }   
+}  

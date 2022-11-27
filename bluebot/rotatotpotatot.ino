@@ -1,4 +1,4 @@
-#define ROTATE_SPEED 90
+#define ROTATE_SPEED 101
 
 int * frontSpeed;
 int * backSpeed;
@@ -14,7 +14,7 @@ void rotate_clockwise (){
   left_en = &motor3_en;
   front_en = &motor2_en;
   back_en = &motor4_en;
-  motor1_forward = true; // BEWARE CHANGED THIS TO FALSE
+  motor1_forward = true; 
   motor3_forward = false; // idk yet need to verify
   motor2_forward = false;
   motor4_forward = true;
@@ -22,10 +22,11 @@ void rotate_clockwise (){
   change_direction(motor2_forward, motor2_in1, motor2_in2);
   change_direction(motor1_forward, motor1_in1, motor1_in2);
   change_direction(motor3_forward, motor3_in1, motor3_in2);
-  *rightSpeed = ROTATE_SPEED;
-  *leftSpeed = ROTATE_SPEED;
-  *frontSpeed = ROTATE_SPEED;
-  *backSpeed = ROTATE_SPEED;
+
+  *rightSpeed = (56+4); //motor1
+  *leftSpeed = (63+4); //motor3
+  *frontSpeed = (111+17);//motor2
+  *backSpeed = (69+4); //motor4
   set_speed(*right_en, *rightSpeed);
   set_speed(*left_en, *leftSpeed);
   set_speed(*front_en, *frontSpeed);
@@ -49,13 +50,14 @@ void rotate_counter_clockwise (){
   change_direction(motor2_forward, motor2_in1, motor2_in2);
   change_direction(motor1_forward, motor1_in1, motor1_in2);
   change_direction(motor3_forward, motor3_in1, motor3_in2);
-  *rightSpeed = ROTATE_SPEED;
-  *leftSpeed = ROTATE_SPEED;
-  *frontSpeed = ROTATE_SPEED;
-  *backSpeed = ROTATE_SPEED;
+
+  *rightSpeed = (56+4); //motor1
+  *leftSpeed = (63+4); //motor3
+  *frontSpeed = (111+75);//motor2
+  *backSpeed = (69+4); //motor4
+
   set_speed(*right_en, *rightSpeed);
   set_speed(*left_en, *leftSpeed);
   set_speed(*front_en, *frontSpeed);
   set_speed(*back_en, *backSpeed);
-
 }
