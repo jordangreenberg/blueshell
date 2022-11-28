@@ -1,10 +1,5 @@
 #define ROTATE_SPEED 101
 
-int * frontSpeed;
-int * backSpeed;
-int * front_en;
-int * back_en;
-
 void rotate_clockwise (){
   rightSpeed = &motor1_speed;
   leftSpeed = &motor3_speed;

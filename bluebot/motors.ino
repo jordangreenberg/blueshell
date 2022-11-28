@@ -245,4 +245,25 @@ void adjustSpeeds(double correction)
 //  }
   constrain_speeds();
 }
+
+void block_motor_onload() {
+
+  // this function will run the motors in both directions at a fixed speed 
+  // turn on motor in forward direction 
+  digitalWrite(motor5_in1, HIGH); 
+  digitalWrite(motor5_in2, LOW); 
+  analogWrite(motor5_en, eat_speed);
+  delay(5000);
+  analogWrite(motor5_en, 0);
+}
+
+void block_motor_offload() {
+
+  digitalWrite(motor5_in1, LOW); 
+  digitalWrite(motor5_in2, HIGH);   
+  analogWrite(motor5_en, eat_speed);
+  delay(5000); 
+  analogWrite(motor5_en, 0);
+}
+
 // END OF MOTOR CONTROLLER FUNCTIONS //////////////////////////

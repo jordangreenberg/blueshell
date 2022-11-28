@@ -25,6 +25,11 @@ int motor4_in2 = 28;
 int motor4_speed = 0;
 bool motor4_forward = true;
 
+int motor5_en = 13;
+int motor5_in1 = 39;
+int motor5_in2 = 41;
+int eat_speed = 100;
+
 double corrected_speed = 0;
 int * rightSpeed;
 int * leftSpeed;
@@ -51,9 +56,28 @@ float corridorFrontDistance = 0;
 
 // GENERAL VARIABLES
 int stepcount = 0;
+bool pid_on = true;
+bool grabbing = false;
+bool dropping = false;
+const double tolerance_grabbing = 0.1;
 #define RIGHT 1
 #define LEFT 2
+#define LOCALIZED 5
+#define LOADING_ZONE 6
+#define CLOCKWISE 7
+#define COUNTER_CLOCKWISE 8
+#define GO_TO_DROP 9
+#define START_GRABBING 10
+#define START_DROPPING 11
 // END OF GENERAL VARIABLES
+
+// LEDS
+#define LED1         50
+#define LED2         42
+#define LED3         44
+#define LED4         46
+#define LED5         52
+// END OF LEDS
 
 double Setpoint, SetpointReverse, InputDirect, OutputDirect;
 double InputReverse, OutputReverse;
@@ -100,6 +124,12 @@ void setup() {
   
   ReversePID.SetMode(AUTOMATIC);
   ReversePID.SetOutputLimits(0, 75);
+
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED3, LOW);
+  digitalWrite(LED4, LOW);
+  digitalWrite(LED5, LOW);
   
 } // end of setup()
 
@@ -129,97 +159,99 @@ void loop() {
 
   // If we got a valid newDirection, assign that and change directions
   if (matlabForwardMotor != -1) {
-    forwardMotor = matlabForwardMotor;
-    change_heading(forwardMotor);
+    if (matlabForwardMotor >= 1 && matlabForwardMotor <= 4) {
+      forwardMotor = matlabForwardMotor;
+      change_heading(forwardMotor);
+    }
+    else if (matlabForwardMotor == LOCALIZED) {
+      // Turn on localized LED
+      digitalWrite(LED1, HIGH);
+    }
+    else if (matlabForwardMotor == LOADING_ZONE) {
+      // Turn off PID
+      pid_on = false;
+      // Turn on LED
+      digitalWrite(LED1, LOW);
+      digitalWrite(LED2, HIGH);
+    }
+    else if (matlabForwardMotor == CLOCKWISE) {
+      // rotate clockwise
+      rotate_clockwise();
+      delay(150);
+      brake();
+    }
+    else if (matlabForwardMotor == COUNTER_CLOCKWISE) {
+      // rotate counter clockwise
+      rotate_counter_clockwise();
+      delay(150);
+      brake();
+    }
+    else if (matlabForwardMotor == GO_TO_DROP) {
+      // Turn PID on
+      pid_on = true;
+    }
+    else if (matlabForwardMotor == START_GRABBING) {
+      grabbing = true;
+    }
+    else if (matlabForwardMotor == START_DROPPING) {
+      dropping = true;
+      // Turn on LED
+      digitalWrite(LED2, LOW);
+      digitalWrite(LED3, HIGH);
+    }
   }
 
   // If we are approaching a wall in front, stop and reverse direction
   if (isForwardSafe(*forwardDistance) == false) {
     brake();
-    forwardMotor = clearestDirection();
-    change_heading(forwardMotor);
+    // forwardMotor = clearestDirection();
+    // change_heading(forwardMotor);
   }
-  else {
-    // Here is where we would put the obstacle avoidance logic 
-    // i.e. should we change our heading/direction that we are moving?
-  
-    // If all 4 directions are clear - TODO: might want to remove backDistance as condition
-    // Actually this condition might not even be necessary, maybe it's just forward clear or not clear??
-    //if (isFourDirectionsClear(*forwardDistance, *rightDistance, *leftDistance, *backDistance)) {
-      // Call controller to calculate correction
-      //corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
+  else if (grabbing) {
+    // Scooch to pickup block
+    int scooch_count = 0;
+    while (block_is_visible()) { // block is visible
+     change_heading(4);
+     drive();
+     delay(50);
+     brake(); 
+     scooch_count++;
+    }
     
-      // Adjust speeds
-      //adjustSpeeds(corrected_speed);
-      
-      // Move with corrected speeds
-      drive_pid();
+    // Pickup the block
+    block_motor_onload();
 
-      delay(200); // MAYBE 1000?
-
+    // Scooch back
+    for (int i = 0; i < scooch_count; i++) {
+      change_heading(2);
+      drive();
+      delay(50);
       brake();
-
-      // PUT BACK IS ORIENTED?
-      // isOriented();
-
-      brake();
-
-      // Below code might not be needed if we get path planning in place
-      // Read the sensors again
-      readSensors();
-  
-      // Look for a corridor
-      //int corridor = new_corridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);      
-      //int corridor = findCorridor(*prevLeft, *leftDistance, *prevRight, *rightDistance, *backDistance, *forwardDistance);
+    }
+    // Tell Matlab we have the block
+    Serial.println("11");
+    grabbing = false;
   }
-//// COMMENTING OUT THE REST OF THE CODE HERE
-//      if (corridor == RIGHT || corridor == LEFT) {
-//        //int cleared = true;
-//        
-//        // If we find a corridor, keep moving forward before changing the heading
-//        while (clearance(*backDistance, corridorBackDistance, *forwardDistance, corridorFrontDistance) == false) {
-//          readSensors();
-//          if (isForwardSafe(*forwardDistance)) {
-//            // Call controller to calculate correction
-//            //corrected_speed = pid_controller(*rightDistance, *leftDistance, *prevRight, *prevLeft);
-//          
-//            // Adjust speeds
-//            //adjustSpeeds(corrected_speed);
-//            
-//            // Move with corrected speeds
-//            drive();
-//
-//            delay(200);
-//
-//            brake();
-//
-//          }
-//          else {
-//            
-//            break;
-//           /* // Reverse heading and break out of this loop - something went wrong
-//            brake();
-//            forwardMotor = reverseHeading(forwardMotor);
-//            change_heading(forwardMotor);
-//            cleared = false;
-//            break;*/
-//          } 
-//        } // end of while (clearance(*backDistance, corridorBackDistance)) == false)
-//
-//        // Once we clear, change heading left or right to head down corridor
-//        
-//        forwardMotor = rotateHeading(corridor, forwardMotor);
-//        Serial.print("Forward motor is now: ");
-//        Serial.println(forwardMotor);
-//        change_heading(forwardMotor); 
-//        drive();
-//        delay(200);
-//        brake();
-//        
-//      } // end of if (corridor == RIGHT || corridor == LEFT)
-//    //} // end of if all four directions are clear
-//
-//   // Maybe here we implement some rotating in case we get too close on either left/right walls - behind shouldn't be an issue
-//    
-//  } // end of else forwardDistance is unsafe
+  else if (dropping) {
+    block_motor_offload();
+  }
+  else {      
+      // Move with corrected speeds (if Matlab is telling us to move)
+      if (matlabForwardMotor >= 1 && matlabForwardMotor <= 4) {
+        if (pid_on) {
+          drive_pid();
+        }
+        else {
+          drive();
+        }
+        
+        delay(200); // MAYBE 1000?
+  
+        brake();
+  
+        // Safety scooch
+        scooch_scooch();
+        change_heading(forwardMotor);
+      } // end of if matlab is telling to go in a direction
+  } // end of if forward direction is safe
 } // end of loop()

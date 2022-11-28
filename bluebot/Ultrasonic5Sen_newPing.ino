@@ -12,6 +12,7 @@
 #define ECHO_PIN3    4
 #define ECHO_PIN4    5
 #define ECHO_PIN5    6
+#define ECHO_PIN6    8
 
 #define MAX_DISTANCE 200
 
@@ -21,12 +22,14 @@ float distance2 = 0;
 float distance3 = 0;
 float distance4 = 0;
 float distance5 = 0;
+float distance6 = 0;
 
 float prevDistance1;
 float prevDistance2;
 float prevDistance3;
 float prevDistance4;
 float prevDistance5;
+float prevDistance6;
 // END of SENSOR VARIABLES
 
 String d1;
@@ -34,6 +37,7 @@ String d2;
 String d3;
 String d4;
 String d5;
+String d6;
 
 String comma = ",";
 
@@ -43,6 +47,7 @@ NewPing sonar2(TRIGGER_PIN, ECHO_PIN2, MAX_DISTANCE);
 NewPing sonar3(TRIGGER_PIN, ECHO_PIN3, MAX_DISTANCE);
 NewPing sonar4(TRIGGER_PIN, ECHO_PIN4, MAX_DISTANCE);
 NewPing sonar5(TRIGGER_PIN, ECHO_PIN5, MAX_DISTANCE);
+NewPing sonar6(TRIGGER_PIN, ECHO_PIN6, MAX_DISTANCE);
  
 void readSensors() 
 {
@@ -51,12 +56,14 @@ void readSensors()
   prevDistance3 = distance3;
   prevDistance4 = distance4;
   prevDistance5 = distance5;
+  prevDistance6 = distance6;
 
   distance1 = 0;
   distance2 = 0;
   distance3 = 0;
   distance4 = 0;
   distance5 = 0;
+  distance6 = 0;
 
   int numAvg = 5;
   
@@ -75,6 +82,8 @@ for (int i = 0; i < numAvg; i++) {
     delay(30);
     distance5 = distance5 + sonar5.ping_cm();
     delay(30);
+    distance6 = distance6 + sonar6.ping_cm();
+    delay(30);
 
   }
 
@@ -85,6 +94,7 @@ for (int i = 0; i < numAvg; i++) {
   float d3avg = distance3 / ((float)numAvg);
   float d4avg = distance4 / ((float)numAvg);
   float d5avg = distance5 / ((float)numAvg);
+  float d6avg = distance6 / ((float)numAvg);
 
   d1 = String(d1avg);
   //Serial.print("d1: ");
@@ -93,6 +103,7 @@ for (int i = 0; i < numAvg; i++) {
   d3 = String(d3avg);
   d4 = String(d4avg);
   d5 = String(d5avg);
+  d6 = String(d6avg);
 }
 
 // send the sensor vaules to matlab
@@ -100,7 +111,7 @@ for (int i = 0; i < numAvg; i++) {
 void sendSensorValues()
 {
   delay(10);
-  Serial.println(d1 + comma + d2 + comma + d3 + comma + d4 + comma + d5);
+  Serial.println(d1 + comma + d2 + comma + d3 + comma + d4 + comma + d5 + comma + d6);
   delay(10);
 }
 
@@ -117,22 +128,58 @@ int getMatlabDirection()
     if (matlab_heading == "0") {
       newDirection = 1;
       //Serial.println(newDirection);
-
     }
     else if (matlab_heading == "90") {
       newDirection = 2;
       //Serial.println(newDirection);
-
     }
     else if (matlab_heading == "180") {
       newDirection = 3;
       //Serial.println(newDirection);
-
     }
     else if (matlab_heading == "270") {
       newDirection = 4;
       //Serial.println(newDirection);
     }
+    else if (matlab_heading == "localized") {
+      // Turn on localized LED
+      newDirection = LOCALIZED;
+    }
+    else if (matlab_heading == "in loading zone") {
+      // Turn off PID
+      // Turn on LED
+      newDirection = LOADING_ZONE;
+    }
+    else if (matlab_heading == "cw") {
+      // rotate clockwise
+      newDirection = CLOCKWISE;
+    }
+    else if (matlab_heading == "ccw") {
+      // rotate counter clockwise
+      newDirection = COUNTER_CLOCKWISE;
+    }
+    else if (matlab_heading == "go to drop") {
+      // Turn PID on
+      newDirection = GO_TO_DROP;
+    }
+    else if (matlab_heading == "start grabbing") {
+      // Start rotating grabber
+      newDirection = START_GRABBING;
+    }
+    else if (matlab_heading == "offload block") {
+      // Start rotating grabber to release block
+      newDirection = START_DROPPING;
+      // Turn on LED
+    }
   }
   return newDirection;
+}
+
+bool block_is_visible() {
+  if (distance6 < (1-tolerance_grabbing) * distance5) {
+    return true;
+  }
+  else {
+    return false;
+  }
 }
