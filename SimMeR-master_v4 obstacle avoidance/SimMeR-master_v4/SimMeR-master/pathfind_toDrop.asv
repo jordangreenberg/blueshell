@@ -1,0 +1,58 @@
+function [heading, to_drop_zone] = pathfind_toDrop(curr_pos, drop_path)
+
+to_drop_zone = 1;
+
+i = curr_pos(1);
+j = curr_pos(2);
+
+b = zeros(1,4);
+
+if i+1 > 4
+    b(3) = 1000;  %3
+else
+    b(3) = drop_path(i+1, j);
+end
+
+if j+1 > 8
+    b(2) = 1000;  %2
+else
+    b(2) = drop_path(i, j+1);
+end 
+
+if i-1 < 1
+    b(1) = 1000;  %1
+else
+    b(1) = drop_path(i-1, j);
+end
+
+if j-1 < 1
+    b(4) = 1000;  %4
+else
+    b(4) = drop_path(i, j-1);
+end
+
+[m, min_b] = min(b);
+disp(b)
+
+if min(b) == 0
+    to_drop_zone = 0; %% we have made it to the drop zone
+end
+
+if min_b == 1
+    heading = 90
+    disp("headingggg")
+elseif min_b == 2
+    heading = 0
+     disp("headingggg")
+elseif min_b == 3
+    heading = 270
+     disp("headingggg")
+elseif min_b == 4
+    heading = 180
+     disp("headingggg")
+end
+disp(heading)
+disp(to_drop_zone)
+
+
+end
