@@ -262,7 +262,7 @@ void block_motor_offload() {
   digitalWrite(motor5_in1, LOW); 
   digitalWrite(motor5_in2, HIGH);   
   analogWrite(motor5_en, eat_speed);
-  delay(5000); 
+  delay(7500); 
   analogWrite(motor5_en, 0);
 }
 

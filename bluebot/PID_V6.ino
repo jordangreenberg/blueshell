@@ -1,8 +1,8 @@
 int rightMaxSpeed;// = 115; 
 int rightMinSpeed;// = 60;
 
-double defaultRight;// = 120;
-double defaultLeft;// = 80;
+double defaultRight;// = 140;
+double defaultLeft;// = 120;
 
 double orientation;// = 3;
 
@@ -23,14 +23,14 @@ void drive_pid()
     // set speed to 200 out of possible range 0~255 
     analogWrite(motor4_en, *rightSpeed); 
   
-    rightMaxSpeed = 145;
-    rightMinSpeed = 60;
-    defaultRight = 80;
-    defaultLeft = 105;
+    rightMaxSpeed = 155;
+    rightMinSpeed = 70;
+    defaultRight = 140;    // 90  // 105 L
+    defaultLeft = 120;    // 115   // 90 L
   
   }
   
-  if (forwardMotor == 2){
+  if (forwardMotor == 3){
     digitalWrite(motor2_in1, HIGH); 
     digitalWrite(motor2_in2, LOW); 
     // set speed to 200 out of possible range 0~255 
@@ -41,13 +41,13 @@ void drive_pid()
     // set speed to 200 out of possible range 0~255 
     analogWrite(motor4_en, *leftSpeed); 
     
-    rightMaxSpeed = 140;
-    rightMinSpeed = 105;
-    defaultRight = 120;
-    defaultLeft = 80;
+    rightMaxSpeed = 150;
+    rightMinSpeed = 115;
+    defaultRight = 110;   // 120
+    defaultLeft = 105;    // 105
   }
   
-  if (forwardMotor == 3){
+  if (forwardMotor == 2){
   
     digitalWrite(motor1_in1, LOW); 
     digitalWrite(motor1_in2, HIGH); 
@@ -59,10 +59,10 @@ void drive_pid()
     // set speed to 200 out of possible range 0~255 
     analogWrite(motor3_en, *leftSpeed); 
     
-    rightMaxSpeed = 90;
-    rightMinSpeed = 50;
-    defaultRight = 60;
-    defaultLeft = 64;
+    rightMaxSpeed = 100;
+    rightMinSpeed = 60;
+    defaultRight = 100;
+    defaultLeft = 110;
   }
   
   if (forwardMotor == 4){
@@ -79,10 +79,10 @@ void drive_pid()
     // set speed to 200 out of possible range 0~255 
     analogWrite(motor3_en, *rightSpeed); 
     
-    rightMaxSpeed = 190;
-    rightMinSpeed = 40;
-    defaultRight = 55;
-    defaultLeft = 69;
+    rightMaxSpeed = 200;
+    rightMinSpeed = 50;
+    defaultRight = 90;  //120L
+    defaultLeft = 110;   //140L
   }
 }
 

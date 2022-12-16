@@ -4,7 +4,7 @@ const double ORIENT_CLEARANCE = 3.0; // Orienting clearance in cm
 const double FORWARD_SAFE = 5; // Safe distance to move forward in cm
 const double SAFE_DISTANCE = 5; // Safe distance for all four directions in cm
 const double CLEARANCE_TOLERANCE = 5; // Tolerance for clearance in cm
-const int SCOOCH_DELAY = 250; // How long we scooch, in milliseconds
+const int SCOOCH_DELAY = 100; // How long we scooch, in milliseconds
 
 const double corriDist = 15;
 
@@ -19,16 +19,16 @@ bool isForwardSafe(float forwardDistance) {
 
 int clearestDirection() {
  readSensors();
- if ((distance1 >= distance2) && (distance1 >= distance3) && (distance1 >= distance4)){
+ if ((d1avg >= d2avg) && (d1avg >= distance3) && (d1avg >= d4avg)){
    return 1;
  }
- if ((distance2 >= distance1) && (distance2 >= distance3) && (distance2 >= distance4)){
+ if ((d2avg >= d1avg) && (d2avg >= d3avg) && (d2avg >= d4avg)){
    return 2;
  }
- if ((distance3 >= distance1) && (distance3 >= distance2) && (distance3 >= distance4)){
+ if ((d3avg >= d1avg) && (d3avg >= d2avg) && (d3avg >= d4avg)){
    return 3;
  }
- if ((distance4 >= distance1) && (distance4 >= distance2) && (distance4 >= distance3)){
+ if ((d4avg >= d1avg) && (d4avg >= d2avg) && (d4avg >= d3avg)){
    return 4;
  }
 }
@@ -76,25 +76,29 @@ bool clearance(float backDistance, float corridorBackDistance, float frontDistan
 
 void scooch_scooch() {
   readSensors();
-  if (distance1 < SAFE_DISTANCE) {
+  if (d1avg < SAFE_DISTANCE) {
+    //Serial.println(d1avg);
     change_heading(3);
     drive();
     delay(SCOOCH_DELAY);
     brake();
   }
-  if (distance2 < SAFE_DISTANCE) {
+  if (d2avg < SAFE_DISTANCE) {
+    //Serial.println(d2avg);
     change_heading(4);
     drive();
     delay(SCOOCH_DELAY);
     brake();
   }
-  if (distance3 < (SAFE_DISTANCE+1)) {
+  if (d3avg < (SAFE_DISTANCE+1)) {
+    //Serial.println(d3avg);
     change_heading(1);
     drive();
     delay(SCOOCH_DELAY);
     brake();
   }
-  if (distance4 < SAFE_DISTANCE) {
+  if (d4avg < SAFE_DISTANCE) {
+    //Serial.println(d4avg);
     change_heading(2);
     drive();
     delay(SCOOCH_DELAY);

@@ -30,6 +30,16 @@ float prevDistance3;
 float prevDistance4;
 float prevDistance5;
 float prevDistance6;
+
+//int newDirection1 = 0;
+
+
+float d1avg;
+float d2avg;
+float d3avg;
+float d4avg;
+float d5avg;
+float d6avg;
 // END of SENSOR VARIABLES
 
 String d1;
@@ -48,8 +58,8 @@ NewPing sonar3(TRIGGER_PIN, ECHO_PIN3, MAX_DISTANCE);
 NewPing sonar4(TRIGGER_PIN, ECHO_PIN4, MAX_DISTANCE);
 NewPing sonar5(TRIGGER_PIN, ECHO_PIN5, MAX_DISTANCE);
 NewPing sonar6(TRIGGER_PIN, ECHO_PIN6, MAX_DISTANCE);
- 
-void readSensors() 
+
+void readSensors()
 {
   prevDistance1 = distance1;
   prevDistance2 = distance2;
@@ -66,35 +76,35 @@ void readSensors()
   distance6 = 0;
 
   int numAvg = 5;
-  
-for (int i = 0; i < numAvg; i++) {
+
+  for (int i = 0; i < numAvg; i++) {
     //Serial.println("in for looop");
 
-    delay(30);
+    delay(10);
     distance1 = distance1 + sonar1.ping_cm();
     //Serial.println(distance1);
-    delay(30);
+    delay(10);
     distance2 = distance2 + sonar2.ping_cm();
-    delay(30);
+    delay(10);
     distance3 = distance3 + sonar3.ping_cm();
-    delay(30);
+    delay(10);
     distance4 = distance4 + sonar4.ping_cm();
-    delay(30);
+    delay(10);
     distance5 = distance5 + sonar5.ping_cm();
-    delay(30);
+    delay(10);
     distance6 = distance6 + sonar6.ping_cm();
-    delay(30);
+    delay(10);
 
   }
 
-  float d1avg = distance1 / ((float)numAvg);
+  d1avg = distance1 / ((float)numAvg);
   //Serial.print("d1avg: ");
   //Serial.println(d1avg);
-  float d2avg = distance2 / ((float)numAvg);
-  float d3avg = distance3 / ((float)numAvg);
-  float d4avg = distance4 / ((float)numAvg);
-  float d5avg = distance5 / ((float)numAvg);
-  float d6avg = distance6 / ((float)numAvg);
+  d2avg = distance2 / ((float)numAvg);
+  d3avg = distance3 / ((float)numAvg);
+  d4avg = distance4 / ((float)numAvg);
+  d5avg = distance5 / ((float)numAvg);
+  d6avg = distance6 / ((float)numAvg);
 
   d1 = String(d1avg);
   //Serial.print("d1: ");
@@ -104,15 +114,36 @@ for (int i = 0; i < numAvg; i++) {
   d4 = String(d4avg);
   d5 = String(d5avg);
   d6 = String(d6avg);
+
+  /*
+    Serial.print("D1: ");
+    Serial.print(d1avg);
+    Serial.print(" | D5: ");
+    Serial.println(d5avg);
+    Serial.print("D2: ");
+    Serial.print(d2avg);
+    Serial.print(" | D4: ");
+    Serial.print(d4avg);
+  */
 }
 
 // send the sensor vaules to matlab
 
 void sendSensorValues()
 {
-  delay(10);
-  Serial.println(d1 + comma + d2 + comma + d3 + comma + d4 + comma + d5 + comma + d6);
-  delay(10);
+  //delay(10);
+  char ack = 'n';
+  while (ack != 'y') {
+    Serial.println(d1 + comma + d2 + comma + d3 + comma + d4 + comma + d5 + comma + d6);
+    digitalWrite(LED1, HIGH);
+    if (Serial.available() > 0) {
+      ack = Serial.read();
+    }
+    delay(50);
+
+  }
+  digitalWrite(LED1, LOW);
+  //delay(10);
 }
 
 int getMatlabDirection()
@@ -120,63 +151,83 @@ int getMatlabDirection()
 
   int newDirection = -1;
 
-  //while (true) {
-  if (Serial.available() > 0) {
-    String matlab_heading = Serial.readString();
-    //Serial.println("Matlab given heading: ");
 
-    if (matlab_heading == "0") {
-      newDirection = 1;
-      //Serial.println(newDirection);
-    }
-    else if (matlab_heading == "90") {
-      newDirection = 2;
-      //Serial.println(newDirection);
-    }
-    else if (matlab_heading == "180") {
-      newDirection = 3;
-      //Serial.println(newDirection);
-    }
-    else if (matlab_heading == "270") {
-      newDirection = 4;
-      //Serial.println(newDirection);
-    }
-    else if (matlab_heading == "localized") {
-      // Turn on localized LED
-      newDirection = LOCALIZED;
-    }
-    else if (matlab_heading == "in loading zone") {
-      // Turn off PID
-      // Turn on LED
-      newDirection = LOADING_ZONE;
-    }
-    else if (matlab_heading == "cw") {
-      // rotate clockwise
-      newDirection = CLOCKWISE;
-    }
-    else if (matlab_heading == "ccw") {
-      // rotate counter clockwise
-      newDirection = COUNTER_CLOCKWISE;
-    }
-    else if (matlab_heading == "go to drop") {
-      // Turn PID on
-      newDirection = GO_TO_DROP;
-    }
-    else if (matlab_heading == "start grabbing") {
-      // Start rotating grabber
-      newDirection = START_GRABBING;
-    }
-    else if (matlab_heading == "offload block") {
-      // Start rotating grabber to release block
-      newDirection = START_DROPPING;
-      // Turn on LED
+  while (true) {
+  //for (int i = 0; i < 30; i++) {
+    if (Serial.available() > 0) {
+      char matlab_heading = Serial.read();
+      //String matlab_heading = "90";
+      //Serial.println("Matlab given heading: ");
+
+      if (matlab_heading == '1') {    //0
+        digitalWrite(LED1, HIGH);
+        newDirection = 1;
+        break;
+        //Serial.println(newDirection);
+      }
+      else if (matlab_heading == '2') {   //90
+        digitalWrite(LED2, HIGH);
+        newDirection = 2;
+        break;
+        //Serial.println(newDirection);
+      }
+      else if (matlab_heading == '3') { //180
+        digitalWrite(LED5, HIGH);
+        newDirection = 3;
+        break;
+        //Serial.println(newDirection);
+      }
+      else if (matlab_heading == '4') {  //270
+        digitalWrite(LED4, HIGH);
+        newDirection = 4;
+        break;
+        //Serial.println(newDirection);
+      }
+      else if (matlab_heading == '0') {  //localized
+        // Turn on localized LED
+        newDirection1 = LOCALIZED;
+        break;
+      }
+      else if (matlab_heading == '5') { //in loading zone
+        // Turn off PID
+        // Turn on LED
+        newDirection2 = LOADING_ZONE;
+        break;
+      }
+      else if (matlab_heading == '6') {   //cw
+        // rotate clockwise
+        newDirection = CLOCKWISE;
+        break;
+      }
+      else if (matlab_heading == '7') { //ccw
+        // rotate counter clockwise
+        newDirection = COUNTER_CLOCKWISE;
+        break;
+      }
+      else if (matlab_heading == '8') { //go to drop
+        // Turn PID on
+        newDirection5 = GO_TO_DROP;
+        break;
+      }
+      else if (matlab_heading == '9') {  //start grabbing
+        // Start rotating grabber
+        newDirection6 = START_GRABBING;
+        break;
+      }
+      else if (matlab_heading == 'a') {
+        // Start rotating grabber to release block
+        newDirection7 = START_DROPPING;
+        break;
+        // Turn on LED
+      }
     }
   }
   return newDirection;
 }
 
+
 bool block_is_visible() {
-  if (distance6 < (1-tolerance_grabbing) * distance5) {
+  if (distance6 < (1 - tolerance_grabbing) * distance5) {
     return true;
   }
   else {
